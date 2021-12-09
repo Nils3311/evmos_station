@@ -159,13 +159,16 @@ def index():
 @app.route('/blockstatus', methods=['POST'])
 def block_status():
     transactionGas = 21000
-    data = db_lastblock()
-    if data is not None:
-        data = data.as_dict()
-    data['timestamp_str'] = datetime.datetime.fromtimestamp(data['timestamp']).strftime('%Y/%m/%d %H:%M:%S')
-    for i in [1, 6, 20]:
-        data[f'gas_avgFee_{i}'] = db_averageGas(i)
-        data[f'gas_transactionPrice_{i}'] = data[f'gas_avgFee_{i}'] * transactionGas
+    try:
+        data = db_lastblock()
+        if data is not None:
+            data = data.as_dict()
+        data['timestamp_str'] = datetime.datetime.fromtimestamp(data['timestamp']).strftime('%Y/%m/%d %H:%M:%S')
+        for i in [1, 6, 20]:
+            data[f'gas_avgFee_{i}'] = db_averageGas(i)
+            data[f'gas_transactionPrice_{i}'] = data[f'gas_avgFee_{i}'] * transactionGas
+    except:
+        data = []
     return jsonify(data)
 
 
