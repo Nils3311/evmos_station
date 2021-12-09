@@ -76,5 +76,3 @@ class Block_hist(db.Model):
         self.gasLimit = gasLimit
         self.averageFee = averageFee
         self.transactions = transactions
-
-

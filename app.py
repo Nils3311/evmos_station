@@ -19,6 +19,7 @@ db.app = app
 db.init_app(app)
 db.create_all()
 db.engine.dispose()
+# Lösung aus https://stackoverflow.com/questions/22752521/uwsgi-flask-sqlalchemy-and-postgres-ssl-error-decryption-failed-or-bad-reco
 
 # APScheduler
 scheduler = APScheduler()

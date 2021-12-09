@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 </head>
-<body class="bg-gradient-to-br from-black to-blue-900 overscroll-none h-screen text-white overflow-scroll bg-fixed">
+<body class="bg-gradient-to-br from-black to-blue-900 overscroll-none h-screen text-white overflow-scroll bg-fixed bg-black">
     <div class="p-6">
         <div id="header" class="h-16 fixed z-100">
             <div id="logo">
@@ -47,8 +47,8 @@
             </div>
             <div id="gasfee" class="mb-20">
                 <p class="font-medium text-blue-1000 pb-8">Gas Fee</p>
-                <div class="flex gap-12">
-                    <div id="fastgas" class="w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
+                <div class="flex flex-col sm:flex-row gap-12">
+                    <div id="fastgas" class="sm:w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
                         <div class="flex justify-between mb-6">
                             <div>
                                 <p class="">Fast</p>
@@ -65,7 +65,7 @@
                             <p class="inline">aP</p>
                         </div>
                     </div>
-                    <div id="mediumgas" class="w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
+                    <div id="mediumgas" class="sm:w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
                         <div class="flex justify-between mb-6">
                             <div>
                                 <p class="">Medium</p>
@@ -82,7 +82,7 @@
                             <p class="inline">aP</p>
                         </div>
                     </div>
-                    <div id="slowgas" class="w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
+                    <div id="slowgas" class="sm:w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
                         <div class="flex justify-between mb-6">
                             <div>
                                 <p class="">Slow</p>

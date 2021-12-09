@@ -159,7 +159,7 @@ Tabular data
 
 /**
 1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)
-2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=1910016)
+2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
 */
 
 table {
@@ -520,6 +520,11 @@ video {
   background-attachment: fixed;
 }
 
+.bg-black {
+  --tw-bg-opacity: 1;
+  background-color: rgba(0, 0, 0, var(--tw-bg-opacity));
+}
+
 .bg-gradient-to-br {
   background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
 }
@@ -583,7 +588,7 @@ video {
 }
 
 .font-medium {
-  font-weight: 1000;
+  font-weight: 500;
 }
 
 .font-bold {
@@ -721,11 +726,6 @@ video {
   color: rgba(255, 255, 255, var(--tw-text-opacity));
 }
 
-.text-blue-1000 {
-  --tw-text-opacity: 1;
-  color: rgba(59, 130, 246, var(--tw-text-opacity));
-}
-
 .w-7 {
   width: 1.75rem;
 }
@@ -740,14 +740,6 @@ video {
 
 .w-96 {
   width: 24rem;
-}
-
-.w-full {
-  width: 100%;
-}
-
-.z-100 {
-  z-index: 100;
 }
 
 .gap-12 {
@@ -781,13 +773,13 @@ video {
 }
 
 @-webkit-keyframes pulse {
-  100% {
+  50% {
     opacity: .5;
   }
 }
 
 @keyframes pulse {
-  100% {
+  50% {
     opacity: .5;
   }
 }
@@ -799,7 +791,7 @@ video {
             animation-timing-function: cubic-bezier(0.8,0,1,1);
   }
 
-  100% {
+  50% {
     transform: none;
     -webkit-animation-timing-function: cubic-bezier(0,0,0.2,1);
             animation-timing-function: cubic-bezier(0,0,0.2,1);
@@ -813,7 +805,7 @@ video {
             animation-timing-function: cubic-bezier(0.8,0,1,1);
   }
 
-  100% {
+  50% {
     transform: none;
     -webkit-animation-timing-function: cubic-bezier(0,0,0.2,1);
             animation-timing-function: cubic-bezier(0,0,0.2,1);
@@ -821,6 +813,13 @@ video {
 }
 
 @media (min-width: 640px) {
+  .sm\:flex-row {
+    flex-direction: row;
+  }
+
+  .sm\:w-full {
+    width: 100%;
+  }
 }
 
 @media (min-width: 768px) {
