@@ -146,11 +146,11 @@ def index():
     #for data in db.session.query(Block_hist).all():
     #    time.append(data.time * 1000)
     #    transactions.append(data.transactions)
-    #return render_template(
-    #    "index.html"
+    return render_template(
+        "index.html"
     #    #time=time,
     #    #tx_data=transactions
-    #)
+    )
 
 # TODO Block Time berechnen um nicht 9 Sekunden pro Block statisch auszugeben
 @app.route('/blockstatus', methods=['POST'])
