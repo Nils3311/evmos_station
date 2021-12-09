@@ -124,13 +124,13 @@ def db_averageGas(numberofblock):
     return int(sum(feelist)/len(feelist))
 
 
-#@scheduler.task('interval', id='job_dbupdate', seconds=10, misfire_grace_time=30)
+@scheduler.task('interval', id='job_dbupdate', seconds=10, misfire_grace_time=30)
 def job_dbupdate():
     db_update()
 
 
 # TODO älter als 7 Tage löschen in Hist
-#@scheduler.task('cron', id='job_cleandb', minute='*/10')
+@scheduler.task('cron', id='job_cleandb', minute='*/10')
 def clean_db():
     timestamp_to = round(datetime.datetime.now().timestamp(), 0)
     timestamp_from = timestamp_to - 600
