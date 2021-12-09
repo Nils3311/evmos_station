@@ -42,7 +42,7 @@ class Block(db.Model):
     baseFeePerGas = db.Column(db.BIGINT)
     averageFee = db.Column(db.BIGINT)
     transactionCount = db.Column(db.BIGINT)
-    transactions = db.relationship('Transaction', backref='block', cascade="all, delete-orphan",
+    transactions = db.relationship('Transaction', backref='block', passive_deletes='all',
                                    lazy='dynamic')
 
     def __init__(self, number, baseFeePerGas, gasLimit, gasUsed, blockHash, miner,
