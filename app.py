@@ -156,7 +156,7 @@ def index():
     )
 
 # TODO Block Time berechnen um nicht 9 Sekunden pro Block statisch auszugeben
-@app.route('/blockstatus', methods=['POST'])
+#@app.route('/blockstatus', methods=['POST'])
 def block_status():
     transactionGas = 21000
     try:
