@@ -3,15 +3,16 @@ import datetime
 from flask import Flask, render_template, jsonify
 from flask_apscheduler import APScheduler
 from sqlalchemy import func
+import os
 
 from model import *
 from evmos_util import *
 
-
+databaseUrl = 'postgres://hjvgvcdpqzwiup:36bb1a722e19c56750d56dc50fd9962d10196d0a33d90aa2233c92d6938b8f39@ec2-54-74-14-109.eu-west-1.compute.amazonaws.com:5432/d5ht8a0hah1r0h'
 
 # Init App and Database Databsase
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/evmos.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = databaseUrl
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.app = app
 db.init_app(app)
