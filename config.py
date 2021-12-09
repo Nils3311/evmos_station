@@ -1,4 +1,3 @@
-from boto.s3.connection import S3Connection
 import os
 
 class Config(object):
@@ -8,7 +7,7 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = ""
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = S3Connection(os.environ['evmosstation'])
+    SQLALCHEMY_DATABASE_URI = os.environ.get('evmosstation', None)
 
 class DevelopmentConfig(Config):
     DEBUG = True
