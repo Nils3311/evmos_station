@@ -140,12 +140,15 @@ def clean_db():
 
 @app.route('/')
 def index():
-    histdata = db.session.query(Block_hist).all()
     time = []
     transactions = []
-    for data in db.session.query(Block_hist).all():
-        time.append(data.time * 1000)
-        transactions.append(data.transactions)
+    try:
+        histdata = db.session.query(Block_hist).all()
+        for data in db.session.query(Block_hist).all():
+            time.append(data.time * 1000)
+            transactions.append(data.transactions)
+    except:
+        pass
     return render_template(
         "index.html",
         time=time,
