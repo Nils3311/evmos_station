@@ -140,23 +140,20 @@ def clean_db():
 
 @app.route('/')
 def index():
-    time = []
-    transactions = []
-    try:
-        histdata = db.session.query(Block_hist).all()
-        for data in db.session.query(Block_hist).all():
-            time.append(data.time * 1000)
-            transactions.append(data.transactions)
-    except:
-        pass
-    return render_template(
-        "index.html",
-        time=time,
-        tx_data=transactions
-    )
+    #time = []
+    #transactions = []
+    #histdata = db.session.query(Block_hist).all()
+    #for data in db.session.query(Block_hist).all():
+    #    time.append(data.time * 1000)
+    #    transactions.append(data.transactions)
+    #return render_template(
+    #    "index.html"
+    #    #time=time,
+    #    #tx_data=transactions
+    #)
 
 # TODO Block Time berechnen um nicht 9 Sekunden pro Block statisch auszugeben
-#@app.route('/blockstatus', methods=['POST'])
+@app.route('/blockstatus', methods=['POST'])
 def block_status():
     transactionGas = 21000
     try:
