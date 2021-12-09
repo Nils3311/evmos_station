@@ -4,8 +4,8 @@ rpc = 'https://evmos-testnet.gateway.pokt.network/v1/lb/61ac07b995d548003aedf5ee
 #rpc = 'https://ethereum.rpc.evmos.dev/'
 
 
-def hex_to_int(integer):
-    return int(integer, 16)
+def hex_to_int(BIGINT):
+    return int(BIGINT, 16)
 
 
 def int_to_hex(hex_string):

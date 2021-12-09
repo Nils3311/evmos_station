@@ -6,17 +6,17 @@ db = SQLAlchemy()
 
 
 class Transaction(db.Model):
-    tx_id = db.Column(db.Integer, primary_key=True)
-    gasPrice = db.Column(db.Integer)
-    gas = db.Column(db.Integer)
-    tx_type = db.Column(db.Integer)
-    hash = db.Column(db.String(50))
-    value = db.Column(db.Integer)
-    addr_to = db.Column(db.String(50))
-    addr_from = db.Column(db.String(50))
-    maxPriorityFeePerGas = db.Column(db.Integer)
-    block_id = db.Column(db.Integer, db.ForeignKey('block.number'))
-    fee = db.Column(db.Integer)
+    tx_id = db.Column(db.BIGINT, primary_key=True)
+    gasPrice = db.Column(db.BIGINT)
+    gas = db.Column(db.BIGINT)
+    tx_type = db.Column(db.BIGINT)
+    hash = db.Column(db.String(100))
+    value = db.Column(db.BIGINT)
+    addr_to = db.Column(db.String(100))
+    addr_from = db.Column(db.String(100))
+    maxPriorityFeePerGas = db.Column(db.BIGINT)
+    block_id = db.Column(db.BIGINT, db.ForeignKey('block.number'))
+    fee = db.Column(db.BIGINT)
 
     def __init__(self, hash, addr_from, addr_to, value, tx_type, gas, gasPrice, maxPriorityFeePerGas):
         self.maxPriorityFeePerGas = maxPriorityFeePerGas
@@ -31,17 +31,17 @@ class Transaction(db.Model):
 
 
 class Block(db.Model):
-    number = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.Integer)
-    size = db.Column(db.String(50))
-    miner = db.Column(db.String(50))
-    blockHash = db.Column(db.String(50))
-    parentHash = db.Column(db.String(50))
-    gasUsed = db.Column(db.Integer)
-    gasLimit = db.Column(db.Integer)
-    baseFeePerGas = db.Column(db.Integer)
-    averageFee = db.Column(db.Integer)
-    transactionCount = db.Column(db.Integer)
+    number = db.Column(db.BIGINT, primary_key=True)
+    timestamp = db.Column(db.BIGINT)
+    size = db.Column(db.String(100))
+    miner = db.Column(db.String(100))
+    blockHash = db.Column(db.String(100))
+    parentHash = db.Column(db.String(100))
+    gasUsed = db.Column(db.BIGINT)
+    gasLimit = db.Column(db.BIGINT)
+    baseFeePerGas = db.Column(db.BIGINT)
+    averageFee = db.Column(db.BIGINT)
+    transactionCount = db.Column(db.BIGINT)
     transactions = db.relationship('Transaction', backref='block', cascade="all, delete-orphan",
                                    lazy='dynamic')
 
@@ -63,12 +63,12 @@ class Block(db.Model):
 
 
 class Block_hist(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    time = db.Column(db.Integer)
-    gasUsed = db.Column(db.Integer)
-    gasLimit = db.Column(db.Integer)
-    averageFee = db.Column(db.Integer)
-    transactions = db.Column(db.Integer)
+    id = db.Column(db.BIGINT, primary_key=True)
+    time = db.Column(db.BIGINT)
+    gasUsed = db.Column(db.BIGINT)
+    gasLimit = db.Column(db.BIGINT)
+    averageFee = db.Column(db.BIGINT)
+    transactions = db.Column(db.BIGINT)
 
     def __init__(self, time, gasUsed, gasLimit, averageFee, transactions):
         self.time = time
