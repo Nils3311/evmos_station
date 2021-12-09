@@ -7,7 +7,7 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = ""
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.environ.get('evmosstation', None)
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', None)
     print(SQLALCHEMY_DATABASE_URI)
 
 class DevelopmentConfig(Config):
