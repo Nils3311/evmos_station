@@ -7,9 +7,10 @@ from sqlalchemy import func
 from model import *
 from evmos_util import *
 
-app = Flask(__name__)
 
-# Init Databsase
+
+# Init App and Database Databsase
+app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/evmos.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.app = app
