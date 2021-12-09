@@ -8,6 +8,7 @@ class Config(object):
 
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('evmosstation', None)
+    print(SQLALCHEMY_DATABASE_URI)
 
 class DevelopmentConfig(Config):
     DEBUG = True
