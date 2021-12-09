@@ -124,7 +124,7 @@ def db_averageGas(numberofblock):
     return int(sum(feelist)/len(feelist))
 
 
-@scheduler.task('interval', id='job_dbupdate', seconds=5, misfire_grace_time=30)
+@scheduler.task('interval', id='job_dbupdate', seconds=10, misfire_grace_time=30)
 def job_dbupdate():
     db_update()
 
