@@ -7,11 +7,6 @@ from sqlalchemy import func
 from model import *
 from evmos_util import *
 
-
-# TODO Socket zum automatischen aktualisieren
-# TODO HTML - Icons raussuchen
-# TODO HTML - HTML mittig vertikal zentrieren
-
 app = Flask(__name__)
 
 # Init Databsase
