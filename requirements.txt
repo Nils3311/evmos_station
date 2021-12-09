@@ -5,3 +5,4 @@ sqlalchemy~=1.4.27
 flask_apscheduler~=1.12.2
 gunicorn~=20.1.0
 psycopg2
+boto

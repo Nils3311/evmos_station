@@ -2,15 +2,21 @@ import datetime
 from flask import Flask, render_template, jsonify
 from flask_apscheduler import APScheduler
 from sqlalchemy import func
+import os
 
 from model import *
 from evmos_util import *
 
 
+
+
 # Init App and Database Databsase
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://fmtpjrzgwjdbsa:b5950b024c393250245282d5dc9695b984330bd0695ab837e35a301004f19d6a@ec2-176-34-222-188.eu-west-1.compute.amazonaws.com:5432/ddvnrdinteavc'
-#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+if os.environ['FLASK_ENV'] == 'development':
+    print('THIS APP IS IN DEBUG MODE.')
+    app.config.from_object("config.DevelopmentConfig")
+else:
+    app.config.from_object("config.ProductionConfig")
 db.app = app
 db.init_app(app)
 db.create_all()
