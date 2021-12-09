@@ -12,11 +12,11 @@ from evmos_util import *
 
 # Init App and Database Databsase
 app = Flask(__name__)
-# if os.environ['FLASK_ENV'] == 'development':
-#     print('THIS APP IS IN DEBUG MODE.')
-#     app.config.from_object("config.DevelopmentConfig")
-# else:
-app.config.from_object("config.ProductionConfig")
+if os.environ['FLASK_ENV'] == 'development':
+    print('THIS APP IS IN DEBUG MODE.')
+    app.config.from_object("config.DevelopmentConfig")
+else:
+    app.config.from_object("config.ProductionConfig")
 db.app = app
 db.init_app(app)
 db.create_all()
