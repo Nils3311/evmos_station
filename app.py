@@ -132,7 +132,7 @@ def job_dbupdate():
 
 
 # TODO älter als 7 Tage löschen in Hist
-@scheduler.task('cron', id='job_cleandb', minute='*/10')
+#@scheduler.task('cron', id='job_cleandb', minute='*/10')
 def clean_db():
     timestamp_to = round(datetime.datetime.now().timestamp(), 0)
     timestamp_from = timestamp_to - 600
