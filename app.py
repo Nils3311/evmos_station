@@ -3,6 +3,7 @@ from flask import Flask, render_template, jsonify
 from flask_apscheduler import APScheduler
 from sqlalchemy import func
 import os
+#import json
 
 from model import *
 from evmos_util import *
@@ -91,7 +92,7 @@ def db_update():
 # TODO Delete Transactions
 def db_deleteoldblocks(olderthentimestamp):
     # TODO UTC Zeitverschiebung prüfen
-    db.session.query(Block).filter(Block.timestamp < olderthentimestamp).delete()
+    db.session.query(Block).filter(Block.timestamp < olderthentimestamp).all().delete()
     print(f"Older then {datetime.datetime.fromtimestamp(olderthentimestamp)} deleted from DB, timestamp {olderthentimestamp}")
     db.session.commit()
 
@@ -132,7 +133,7 @@ def job_dbupdate():
 
 
 # TODO älter als 7 Tage löschen in Hist
-#@scheduler.task('cron', id='job_cleandb', minute='*/10')
+@scheduler.task('cron', id='job_cleandb', minute='*/10')
 def clean_db():
     timestamp_to = round(datetime.datetime.now().timestamp(), 0)
     timestamp_from = timestamp_to - 600
@@ -140,6 +141,7 @@ def clean_db():
     db_deleteoldblocks(timestamp_from)
 
 
+# TODO Vorbefüllen mit aktuellen Werten damit es beim Laden nicht ploppt
 @app.route('/')
 def index():
     time = []
@@ -150,6 +152,7 @@ def index():
        transactions.append(data.transactions)
     return render_template(
         "index.html",
+        #blockstatus=json.dumps(block_status().response),
         time=time,
         tx_data=transactions
     )

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>EVMOS Gas Monitoring</title>
-    {#  TODO Favicon  #}
+    <! #TODO Favicon
     <link rel='shortcut icon' type='image/x-icon' href='/favicon.ico' />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="../static/tailwind.css" rel="stylesheet">
@@ -11,16 +11,16 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 </head>
 <body class="bg-gradient-to-br from-black to-blue-900 overscroll-none h-screen text-white overflow-scroll bg-fixed bg-black">
-    <div class="p-6">
-        <div id="header" class="h-16 fixed z-100 bg-gradiant-to">
+    <div class="">
+        <div id="header" class="fixed z-100 bg-gradient-to-b from-black lg:from-transparent to-transparent w-full p-6">
             <div id="logo">
                 <p class="font-bold text-4xl leading-none -mb-1">Evmos</p>
                 <p class="font-extralight text-xl leading-none pl-24">station</p>
             </div>
         </div>
-        <div id="content" class="m-auto max-w-screen-sm flex flex-col justify-center pt-32">
+        <div id="content" class="m-auto max-w-screen-sm flex flex-col justify-center pt-32 p-6">
             <div id="lastblock" class="mb-16">
-                <p class="font-medium text-blue-1000 pb-3">Last Block</p>
+                <p class="font-medium text-blue-500 pb-3">Last Block</p>
                 <div class="flex flex-col-reverse sm:flex-row justify-between">
                     <table class="font-extralight text-sm">
                         <tr>
@@ -40,14 +40,14 @@
                             <td id="block_size" class="font-bold"></td>
                         </tr>
                     </table>
-                    <div class="text-left pb-4 sm:pb-0 sm:text-right">
-                        <p id="block_number" class="font-bold text-xl">123123</p>
-                        <p id="block_timestamp" class="font-extralight text-sm">123123123123123123 123123123123123123</p>
+                    <div class="text-left pb-4 sm:pb-0 text-right">
+                        <p id="block_number" class="font-bold text-xl">ddd</p>
+                        <p id="block_timestamp" class="font-extralight text-sm"></p>
                     </div>
                 </div>
             </div>
             <div id="gasfee" class="mb-20">
-                <p class="font-medium text-blue-1000 pb-8">Gas Fee</p>
+                <p class="font-medium text-blue-500 pb-8">Gas Fee</p>
                 <div class="flex flex-col sm:flex-row gap-12">
                     <div id="fastgas" class="sm:w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
                         <div class="flex justify-between mb-6">
@@ -55,7 +55,7 @@
                                 <p class="">Fast</p>
                                 <p class="font-extralight text-xs">< 9 Seconds</p>
                             </div>
-                            <img src="../static/rocket.png" class="w-7 h-full">
+                            <img src="../static/002-rocket.png" class="w-7 h-full">
                         </div>
                         <div class="text-xl mb-6">
                             <p id="gasFast" class="inline font-bold"></p>
@@ -72,7 +72,7 @@
                                 <p class="">Medium</p>
                                 <p class="font-extralight text-xs">< 54 Seconds</p>
                             </div>
-                            <img src="../static/car.png" class="w-8 h-full">
+                            <img src="../static/003-sport-car.png" class="w-7 h-full">
                         </div>
                         <div class="text-xl mb-6">
                             <p id="gasMedium" class="inline font-bold"></p>
@@ -89,7 +89,7 @@
                                 <p class="">Slow</p>
                                 <p class="font-extralight text-xs">< 180 Seconds</p>
                             </div>
-                            <img src="../static/snail.png" class="w-7 h-full">
+                            <img src="../static/001-snail.png" class="w-7 h-full">
                         </div>
                         <div class="text-xl mb-6">
                             <p id="gasSlow" class="inline font-bold"></p>
@@ -103,7 +103,7 @@
                 </div>
             </div>
             <div id="History" class="mb-12">
-                <p class="font-medium text-blue-1000 pb-3">History</p>
+                <p class="font-medium text-blue-500 pb-3">History</p>
                 <div class="flex justify-between">
                     <canvas id="chart_tx" class="w-96 h-96"></canvas>
                 </div>
