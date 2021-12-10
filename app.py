@@ -134,6 +134,11 @@ def db_averageGas(numberofblock):
 def job_dbupdate():
     db_update()
 
+# TODO Bug richtig fixen
+@scheduler.task('cron', id='job_rollbackb', minute='*/5')
+def job_rollback():
+    db.session.rollback()
+
 
 # TODO älter als 7 Tage löschen in Hist
 @scheduler.task('cron', id='job_cleandb', minute='*/10')
