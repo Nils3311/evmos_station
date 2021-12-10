@@ -92,11 +92,11 @@ def db_update():
 # TODO Delete Transactions
 def db_deleteoldblocks(olderthentimestamp):
     # TODO UTC Zeitverschiebung prüfen
-    oldBlocks = Block.query.filter(Block.timestamp < olderthentimestamp).all().delete()
+    oldBlocks = Block.query.filter(Block.timestamp < olderthentimestamp).all()
     for block in oldBlocks:
         block.delete()
     db.session.commit()
-    print(f"Older then {datetime.datetime.fromtimestamp(olderthentimestamp)} deleted from DB, timestamp {olderthentimestamp}")
+    print(f"Older then {datetime.datetime.fromtimestamp(olderthentimestamp)} deleted from DB")
     db.session.commit()
 
 
