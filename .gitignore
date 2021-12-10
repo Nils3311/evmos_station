@@ -6,3 +6,4 @@
 /tailwind.config.js
 /database/
 /.env
+/database/*
