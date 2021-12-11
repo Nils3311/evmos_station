@@ -89,7 +89,7 @@ def db_update():
     else:
         print("DB has heighest block")
 
-# TODO Delete Transactions
+# TODO Delete Transactions older then 7 days
 def db_deleteoldblocks(olderthentimestamp):
     # TODO UTC Zeitverschiebung prüfen
     oldBlocks = Block.query.filter(Block.timestamp < olderthentimestamp).all()
@@ -99,7 +99,7 @@ def db_deleteoldblocks(olderthentimestamp):
     print(f"Older then {datetime.datetime.fromtimestamp(olderthentimestamp)} deleted from DB")
     db.session.commit()
 
-
+# TODO Skip if none in one of the values
 def db_copytohist(timestamp_from, timestamp_to):
     hist_blocks = db.session.query(
         func.max(Block.transactionCount).label("sum_transactions"),
@@ -140,7 +140,6 @@ def job_rollback():
     db.session.rollback()
 
 
-# TODO älter als 7 Tage löschen in Hist
 @scheduler.task('cron', id='job_cleandb', minute='*/10')
 def clean_db():
     timestamp_to = round(datetime.datetime.now().timestamp(), 0)
@@ -150,11 +149,17 @@ def clean_db():
 
 
 # TODO Vorbefüllen mit aktuellen Werten damit es beim Laden nicht ploppt
+# TODO Hinweis auf Website, wenn der letzte Zeitstempel länger als 10 Minuten entfernt
+# TODO Hinweis wenn der RPC nicht reagiert
 @app.route('/')
 def index():
     time = []
     transactions = []
     histdata = db.session.query(Block_hist).all()
+    if datetime.datetime.now().timestamp() >= db_lastblock().timestamp + 600:
+        warning = "Displayed data not in sync with chain. Please try later again"
+    else:
+        warning = None
     for data in histdata:
        time.append(data.time * 1000)
        transactions.append(data.transactions)
@@ -162,9 +167,12 @@ def index():
         "index.html",
         #blockstatus=json.dumps(block_status().response),
         time=time,
-        tx_data=transactions
+        tx_data=transactions,
+        warning=warning
     )
 
+# TODO TailwindCSS 3.0
+# TODO Tailwind Deploy Automation
 # TODO Block Time berechnen um nicht 9 Sekunden pro Block statisch auszugeben
 @app.route('/blockstatus', methods=['POST'])
 def block_status():
