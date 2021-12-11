@@ -99,23 +99,24 @@ def db_deleteoldblocks(olderthentimestamp):
     print(f"Older then {datetime.datetime.fromtimestamp(olderthentimestamp)} deleted from DB")
     db.session.commit()
 
-# TODO Skip if none in one of the values
+
 def db_copytohist(timestamp_from, timestamp_to):
     hist_blocks = db.session.query(
         func.max(Block.transactionCount).label("sum_transactions"),
         func.avg(Block.averageFee).label("avg_fee"),
         func.avg(Block.gasUsed).label("avg_gasUsed"),
         func.avg(Block.gasLimit).label("avg_gasLimit"),
-    ).filter(Block.timestamp >= timestamp_from, Block.timestamp <= timestamp_to).all()
-    hist_blockValue = Block_hist(
-        time=round(timestamp_from, 0),
-        transactions=hist_blocks[0]['sum_transactions'],
-        gasLimit=hist_blocks[0]['avg_gasLimit'],
-        gasUsed=hist_blocks[0]['avg_gasUsed'],
-        averageFee=hist_blocks[0]['avg_fee']
-    )
-    db.session.add(hist_blockValue)
-    db.session.commit()
+    ).filter(Block.timestamp >= timestamp_from, Block.timestamp <= timestamp_to).first()
+    if all(block is not None for block in hist_blocks):
+        hist_blockValue = Block_hist(
+            time=round(timestamp_from, 0),
+            transactions=hist_blocks['sum_transactions'],
+            gasLimit=hist_blocks['avg_gasLimit'],
+            gasUsed=hist_blocks['avg_gasUsed'],
+            averageFee=hist_blocks['avg_fee']
+        )
+        db.session.add(hist_blockValue)
+        db.session.commit()
 
 def db_averageGas(numberofblock):
     blocks = db.session.query(Block).order_by(Block.number.desc()).limit(numberofblock).all()
@@ -157,7 +158,7 @@ def index():
     transactions = []
     histdata = db.session.query(Block_hist).all()
     if datetime.datetime.now().timestamp() >= db_lastblock().timestamp + 600:
-        warning = "Displayed data not in sync with chain. Please try later again"
+        warning = "Error in synchronisation"
     else:
         warning = None
     for data in histdata:
