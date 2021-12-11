@@ -67,7 +67,7 @@
                             <p class="inline">aP</p>
                         </div>
                     </div>
-                    <div id="mediumgas" class="transform transition hover:scale-105 sm:w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
+                    <div id="mediumgas" class="transform transition sm:hover:scale-105 sm:w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
                         <div class="flex justify-between mb-6">
                             <div>
                                 <p class="">Medium</p>
@@ -85,7 +85,7 @@
                             <p class="inline">aP</p>
                         </div>
                     </div>
-                    <div id="slowgas" class="transform transition hover:scale-105 sm:w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
+                    <div id="slowgas" class="transform transition sm:hover:scale-105 sm:w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
                         <div class="flex justify-between mb-6">
                             <div>
                                 <p class="">Slow</p>
@@ -166,7 +166,9 @@
         datasets: [{
             data: {{ tx_data }},
             borderColor: 'rgb(255, 255, 255)',
-            borderWidth: 1
+            borderWidth: 1,
+            pointRadius: 1,
+            pointHoverRadius: 4
         }]
       },
         options: {
