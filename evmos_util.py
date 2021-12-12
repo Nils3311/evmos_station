@@ -1,7 +1,7 @@
 import requests
 
-rpc = 'https://evmos-testnet.gateway.pokt.network/v1/lb/61ac07b995d548003aedf5ee'
-#rpc = 'https://ethereum.rpc.evmos.dev/'
+#rpc = 'https://evmos-testnet.gateway.pokt.network/v1/lb/61ac07b995d548003aedf5ee'
+rpc = 'https://ethereum.rpc.evmos.dev/'
 
 
 def hex_to_int(BIGINT):

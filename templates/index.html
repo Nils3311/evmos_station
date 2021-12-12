@@ -38,7 +38,7 @@
                             <td id="block_usage" class="font-bold"></td>
                         </tr>
                         <tr>
-                            <td>Base Fee</td>
+                            <td>Base Gas Price</td>
                             <td id="block_basefee" class="font-bold"></td>
                         </tr>
                         <tr>
@@ -53,7 +53,7 @@
                 </div>
             </div>
             <div id="gasfee" class="mb-20">
-                <p class="font-medium text-blue-500 pb-8">Gas Fee</p>
+                <p class="font-medium text-blue-500 pb-8">Gas Price</p>
                 <div class="flex flex-col sm:flex-row gap-12">
                     <div id="fastgas" class="z-0 transform transition sm:hover:scale-105 sm:w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
                         <div class="flex justify-between mb-6">
@@ -115,7 +115,7 @@
                 <p class="font-medium text-blue-500 pb-3">History</p>
                 <div>
                     <canvas id="chart_tx" class="w-full"></canvas>
-                    <canvas id="chart_matrix_fix" class="w-full"></canvas>
+                    <canvas id="chart_matrix_notshow class="w-full"></canvas>
                 </div>
             </div>
         </div>
@@ -222,27 +222,34 @@
     type: 'matrix',
       data: {
         datasets: [{
-          label: 'Basic matrix',
-          data: [{x: 1, y: 1}, {x: 2, y: 1}, {x: 1, y: 2}, {x: 2, y: 2}],
+          label: 'Average Gas Price',
+          data: [
+            {x: 1, y: 1, v: 11},
+            {x: 2, y: 2, v: 22},
+            {x: 3, y: 3, v: 33}
+          ],
           borderWidth: 1,
-          borderColor: 'rgba(0,0,0,0.5)',
-          backgroundColor: 'rgba(200,200,0,0.3)',
-          width: ({chart}) => (chart.chartArea || {}).width / 2 - 1,
-          height: ({chart}) => (chart.chartArea || {}).height / 2 - 1,
+          borderColor: 'rgba(255,255,255,0.5)',
+          backgroundColor: 'rgba(255,255,0,0.76)',
+          width: ({chart}) => (chart.chartArea || {}).width / 3 - 1,
+          height: ({chart}) => (chart.chartArea || {}).height / 8 - 1,
         }],
       },
       options: {
+        plugins: {
+            legend: false
+        },
         scales: {
           x: {
             display: false,
             min: 0.5,
-            max: 2.5,
+            max: 3.5,
             offset: false
           },
           y: {
             display: false,
             min: 0.5,
-            max: 2.5
+            max: 7.5
           }
         }
       }

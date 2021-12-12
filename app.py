@@ -150,7 +150,6 @@ def clean_db():
 
 
 # TODO Vorbefüllen mit aktuellen Werten damit es beim Laden nicht ploppt
-# TODO Hinweis auf Website, wenn der letzte Zeitstempel länger als 10 Minuten entfernt
 # TODO Hinweis wenn der RPC nicht reagiert
 @app.route('/')
 def index():
