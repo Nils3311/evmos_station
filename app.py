@@ -155,7 +155,7 @@ def clean_db():
 def index():
     time = []
     transactions = []
-    histdata = db.session.query(Block_hist).filter(Block.timestamp > datetime.datetime.now().timestamp() - (60*60*24)).all()
+    histdata = db.session.query(Block_hist).filter(Block_hist.time > datetime.datetime.now().timestamp() - (60*60*24)).all()
     if datetime.datetime.now().timestamp() >= db_lastblock().timestamp + 600:
         warning = "Error in synchronisation"
     else:
