@@ -153,12 +153,12 @@
                 block_usage.innerText = ((data.gasUsed / data.gasLimit)*100).toFixed(2) + ' %'
                 block_transaction.innerText = data.transactionCount
                 block_timestamp.innerText = data.timestamp_str
-                gas_fast.innerText = data.gas_avgFee_1
-                gas_fast_tx.innerText = data.gas_transactionPrice_1
-                gas_medium.innerText = data.gas_avgFee_6
-                gas_medium_tx.innerText = data.gas_transactionPrice_6
-                gas_slow.innerText = data.gas_avgFee_20
-                gas_slow_tx.innerText = data.gas_transactionPrice_20
+                gas_fast.innerText = data.gas_avgFee[1]
+                gas_fast_tx.innerText = data.gas_avgFee[1] * 21000
+                gas_medium.innerText = data.gas_avgFee[6]
+                gas_medium_tx.innerText = data.gas_avgFee[6] * 21000
+                gas_slow.innerText = data.gas_avgFee[20]
+                gas_slow_tx.innerText = data.gas_avgFee[20] * 21000
             })
         })
     }

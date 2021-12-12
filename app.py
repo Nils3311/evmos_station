@@ -174,17 +174,21 @@ def index():
 # TODO TailwindCSS 3.0
 # TODO Tailwind Deploy Automation
 # TODO Block Time berechnen um nicht 9 Sekunden pro Block statisch auszugeben
+# TODO Gas Price verbessern (nicht teurer als der vorhergehende)
 @app.route('/blockstatus', methods=['POST'])
 def block_status():
-    transactionGas = 21000
     try:
         data = db_lastblock()
         if data is not None:
             data = data.as_dict()
         data['timestamp_str'] = datetime.datetime.fromtimestamp(data['timestamp']).strftime('%Y/%m/%d %H:%M:%S')
-        for i in [1, 6, 20]:
-            data[f'gas_avgFee_{i}'] = db_averageGas(i)
-            data[f'gas_transactionPrice_{i}'] = data[f'gas_avgFee_{i}'] * transactionGas
+        averageGas = {}
+        blocks = [1, 6, 20]
+        for count, i in enumerate(blocks):
+            averageGas[i] = db_averageGas(i)
+            if count > 1 and averageGas[i] > averageGas[blocks[count-1]]:
+                averageGas[i] = averageGas[blocks[count-1]]
+        data['gas_avgFee'] = averageGas
     except:
         data = []
     return jsonify(data)

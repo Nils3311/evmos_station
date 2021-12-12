@@ -3,6 +3,7 @@ import requests
 #rpc = 'https://evmos-testnet.gateway.pokt.network/v1/lb/61ac07b995d548003aedf5ee'
 rpc = 'https://ethereum.rpc.evmos.dev/'
 
+#TODO How to handle if RPC is not anawering
 
 def hex_to_int(BIGINT):
     return int(BIGINT, 16)
