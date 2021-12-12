@@ -155,7 +155,7 @@ def clean_db():
 def index():
     time = []
     transactions = []
-    histdata = db.session.query(Block_hist).all()
+    histdata = db.session.query(Block_hist).filter(Block.timestamp > datetime.datetime.now().timestamp() - (60*60*24)).all()
     if datetime.datetime.now().timestamp() >= db_lastblock().timestamp + 600:
         warning = "Error in synchronisation"
     else:
@@ -174,7 +174,6 @@ def index():
 # TODO TailwindCSS 3.0
 # TODO Tailwind Deploy Automation
 # TODO Block Time berechnen um nicht 9 Sekunden pro Block statisch auszugeben
-# TODO Gas Price verbessern (nicht teurer als der vorhergehende)
 @app.route('/blockstatus', methods=['POST'])
 def block_status():
     try:
