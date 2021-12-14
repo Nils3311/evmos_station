@@ -100,6 +100,16 @@ def db_deleteoldblocks(olderthentimestamp):
     db.session.commit()
 
 
+def db_deleteoldhistblocks(olderthentimestamp):
+    # TODO UTC Zeitverschiebung prüfen
+    oldBlocks = Block_hist.query.filter(Block_hist.time < olderthentimestamp).all()
+    for block in oldBlocks:
+        db.session.delete(block)
+    db.session.commit()
+    print(f"History older then {datetime.datetime.fromtimestamp(olderthentimestamp)} deleted from DB")
+    db.session.commit()
+
+
 def db_copytohist(timestamp_from, timestamp_to):
     hist_blocks = db.session.query(
         func.max(Block.transactionCount).label("sum_transactions"),
@@ -147,6 +157,7 @@ def clean_db():
     timestamp_from = timestamp_to - 600
     db_copytohist(timestamp_from, timestamp_to)
     db_deleteoldblocks(timestamp_from)
+    db_deleteoldhistblocks(timestamp_to - (8 * 24 * 60 * 60))
 
 
 # TODO Vorbefüllen mit aktuellen Werten damit es beim Laden nicht ploppt
