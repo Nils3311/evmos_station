@@ -6,9 +6,8 @@
     <link rel="icon" href="../static/favicon.png" sizes="32x32" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="../static/tailwind.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.2/chart.min.js" integrity="sha512-tMabqarPtykgDtdtSqCL3uLVM0gS1ZkUAVhRFu1vSEFgvB73niFQWJuvviDyBGBH22Lcau4rHB5p2K2T0Xvr6Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1.1.1/dist/chartjs-chart-matrix.min.js"></script>
 </head>
 <body class="bg-gradient-to-br from-black to-blue-900 overscroll-none h-screen text-white overflow-scroll bg-fixed bg-black">
     <div class="">
@@ -47,7 +46,7 @@
                         </tr>
                     </table>
                     <div class="text-right pb-4 sm:pb-0">
-                        <p id="block_number" class="font-bold text-xl">sss</p>
+                        <p id="block_number" class="font-bold text-xl text-">sss</p>
                         <p id="block_timestamp" class="font-extralight text-sm"></p>
                     </div>
                 </div>
@@ -59,7 +58,7 @@
                         <div class="flex justify-between mb-6">
                             <div>
                                 <p class="">Fast</p>
-                                <p class="font-extralight text-xs">< 9 Seconds</p>
+                                <p class="font-extralight text-xs text-">< 9 Seconds</p>
                             </div>
                             <img src="../static/002-rocket.png" class="w-7 h-full">
                         </div>
@@ -113,10 +112,28 @@
             </div>
             <div id="History" class="mb-12">
                 <p class="font-medium text-blue-500 pb-3">History</p>
+                <div class="mb-12">
+                    <p class="font-extralight text-sm pb-4">Average Gas Price (Last 7 days)</p>
+                    <table class="w-full text-xs font-extralight">
+                    {% for hour in hours %}
+                    <tr>
+                        <td class="text-right">{{ hour }}</td>
+                        {% for day in days %}
+                            <td class="text-center {% if matrix[hour][day]['currentdatetime']==1 %}border-2{% endif %} {% if matrix[hour][day]['color']!=0 %}bg-blue-{{ matrix[hour][day]['color']  }}{% endif %}">{{ matrix[hour][day]['value']  }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td class="text-center text-"></td>
+                        {% for day in days %}
+                        <td class="text-center">{{ day }}</td>
+                        {% endfor %}
+                    </tr>
+                    </table>
+                </div>
                 <div>
                     <p class="font-extralight text-sm pb-4">Sum of Transactions (Last 24 hours)</p>
-                    <canvas id="chart_tx" class="w-full"></canvas>
-                    <canvas id="chart_matrix_notshow class="w-full"></canvas>
+                    <canvas id="chart_tx" class="w-full pb-4"></canvas>
                 </div>
             </div>
         </div>
@@ -166,8 +183,8 @@
     document.addEventListener('DOMContentLoaded',callBlock)
     setInterval(callBlock, 4000);
 
-    const ctx = document.getElementById('chart_tx').getContext('2d');
-    let chart = new Chart(ctx, {
+    const ctx2 = document.getElementById('chart_tx').getContext('2d');
+    let chart2 = new Chart(ctx2, {
       type: 'line',
       data: {
           labels: {{ time }},
@@ -219,47 +236,6 @@
         }
     });
 
-    const ctx2 = document.getElementById('chart_matrix').getContext('2d');
-    let chart2 = new Chart(ctx2, {
-    type: 'matrix',
-      data: {
-        datasets: [{
-          label: 'Average Gas Price',
-          data: [
-            {x: 1, y: 1, v: 11},
-            {x: 2, y: 2, v: 22},
-            {x: 3, y: 3, v: 33}
-          ],
-          borderWidth: 1,
-          borderColor: 'rgba(255,255,255,0.5)',
-          backgroundColor: 'rgba(255,255,0,0.76)',
-          width: ({chart}) => (chart.chartArea || {}).width / 3 - 1,
-          height: ({chart}) => (chart.chartArea || {}).height / 8 - 1,
-        }],
-      },
-      options: {
-        plugins: {
-            legend: false
-        },
-        scales: {
-          x: {
-            display: false,
-            min: 0.5,
-            max: 3.5,
-            offset: false
-          },
-          y: {
-            display: false,
-            min: 0.5,
-            max: 7.5
-          }
-        }
-      }
-    });
-
-    module.exports = {
-      config
-    };
 </script>
 </body>
 </html>

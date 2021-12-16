@@ -1,9 +1,9 @@
 import datetime
 from flask import Flask, render_template, jsonify
 from flask_apscheduler import APScheduler
-from sqlalchemy import func
+import calendar
+from sqlalchemy import func, desc
 import os
-#import json
 
 from model import *
 from evmos_util import *
@@ -69,6 +69,12 @@ def db_createblock(blockheight):
         blockValue.averageFee = sum(feelist)/len(feelist)
     else:
         blockValue.averageFee = 0
+    gaspricelist = [x.gasPrice * x.gas for x in blockValue.transactions.all()]
+    total_gas = [x.gas for x in blockValue.transactions.all()]
+    if len(gaspricelist) > 0:
+        blockValue.averageGasPrice = sum(gaspricelist)/sum(total_gas)
+    else:
+        blockValue.averageGasPrice = blockValue.baseFeePerGas
     db.session.add(blockValue)
     db.session.commit()
 
@@ -116,6 +122,7 @@ def db_copytohist(timestamp_from, timestamp_to):
         func.avg(Block.averageFee).label("avg_fee"),
         func.avg(Block.gasUsed).label("avg_gasUsed"),
         func.avg(Block.gasLimit).label("avg_gasLimit"),
+        func.avg(Block.averageGasPrice).label("avg_gasPrice"),
     ).filter(Block.timestamp >= timestamp_from, Block.timestamp <= timestamp_to).first()
     if all(block is not None for block in hist_blocks):
         hist_blockValue = Block_hist(
@@ -123,7 +130,8 @@ def db_copytohist(timestamp_from, timestamp_to):
             transactions=hist_blocks['sum_transactions'],
             gasLimit=hist_blocks['avg_gasLimit'],
             gasUsed=hist_blocks['avg_gasUsed'],
-            averageFee=hist_blocks['avg_fee']
+            averageFee=hist_blocks['avg_fee'],
+            averageGasPrice=hist_blocks['avg_gasPrice']
         )
         db.session.add(hist_blockValue)
         db.session.commit()
@@ -139,6 +147,58 @@ def db_averageGas(numberofblock):
         else:
             feelist.append(block.averageFee)
     return int(sum(feelist)/len(feelist))
+
+
+def price_matrix():
+    today_date = datetime.date.today() + datetime.timedelta(days=1)
+    past_7_date = today_date - datetime.timedelta(days=8)
+    today_timestamp = datetime.datetime.strptime(today_date.strftime("%d.%m.%Y"), "%d.%m.%Y").timestamp()
+    past_7_timestamp = datetime.datetime.strptime(past_7_date.strftime("%d.%m.%Y"), "%d.%m.%Y").timestamp()
+
+    blocks = db.session.query(
+        func.date_part('day', func.to_timestamp(Block_hist.time)).label('day'),
+        func.date_part('hour', func.to_timestamp(Block_hist.time)).label('hour'),
+        func.avg(Block_hist.averageGasPrice).label('averageGasPrice'),
+        func.min(Block_hist.time).label('timestamp')
+    ).filter(
+        Block_hist.time >= past_7_timestamp,
+        Block_hist.time < today_timestamp
+    ).group_by('day', 'hour').order_by(desc("averageGasPrice")).all()
+
+    data = {}
+    hours = [str(i).zfill(2)+":00" for i in range(24)]
+    # rearrange Week List to today
+    days = [day for day in calendar.day_name]
+    pos = days.index(calendar.day_name[datetime.datetime.today().weekday()]) + 1
+    days = days[pos:] + days[:pos]
+
+    # Create DF
+    for hour in hours:
+        data[hour] = {}
+        for day in calendar.day_name:
+            data[hour][day] = {}
+            data[hour][day]["value"] = ""
+            data[hour][day]["color"] = 0
+
+    max_avgGasPrice = blocks[0]["averageGasPrice"]
+
+    # Fill DF
+    for block in blocks:
+        value = round(block.averageGasPrice)
+        # zw. 7 und max
+        # Ziel -> 500-900
+        color = (round(9 - value / max_avgGasPrice * 4))*100
+        current_hour = str(int(block.hour)).zfill(2) + ":00"
+        current_day = calendar.day_name[datetime.datetime.fromtimestamp(block.timestamp).weekday()]
+        data[current_hour][current_day]["value"] = value
+        data[current_hour][current_day]["color"] = color
+        today = datetime.datetime.today()
+        if current_hour == (datetime.datetime.now()-datetime.timedelta(hours=1)).strftime("%H:00"):
+            data[current_hour][current_day]["currentdatetime"] = 1
+        else:
+            data[current_hour][current_day]["currentdatetime"] = 0
+
+    return data, days, hours
 
 
 @scheduler.task('interval', id='job_dbupdate', seconds=10, misfire_grace_time=30)
@@ -166,6 +226,7 @@ def clean_db():
 def index():
     time = []
     transactions = []
+    matrix, days, hours = price_matrix()
     histdata = db.session.query(Block_hist).filter(Block_hist.time > datetime.datetime.now().timestamp() - (60*60*24)).order_by(Block_hist.time.desc()).all()
     if datetime.datetime.now().timestamp() >= db_lastblock().timestamp + 600:
         warning = "Error in synchronisation"
@@ -179,6 +240,9 @@ def index():
         #blockstatus=json.dumps(block_status().response),
         time=time,
         tx_data=transactions,
+        matrix=matrix,
+        days=days,
+        hours=hours,
         warning=warning
     )
 
@@ -230,5 +294,17 @@ if __name__ == '__main__':
 #Heatmap
 #speed
 
+# postgres_session.query(
+#         func.date_part('day', func.to_timestamp(Score.timestamp)).label('day'),
+#         func.date_part('hour', func.to_timestamp(Score.timestamp)).label('hour'),
+#         func.date_part('minute', func.to_timestamp(Score.timestamp)).label('minute'),
+#
+#         func.max(Score.points).label('points'))
+#     .group_by(
+#         'day', 'hour', 'minute'
+#     )
 
+#gruppe = db.session.query(func.date_part('hour', func.to_timestamp(Block_hist.time)).label('hour')).all()
+#db.session.query(extract('hour', Block_hist.time).label('h')).group_by('h').first()
+#gruppe = db.session.query(Block_hist).group_by(func.date_trunc('hour', Block_hist.time).label('hour'))
 #current_gasestimation = eth_estimateGas('0xCF292488f71DceDDDde12c34C654409096801afC', '0x2B3EA71489855C524E193cFA7E95F2F2825CE2A8', "0x16345785d8a00000")
