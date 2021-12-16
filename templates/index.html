@@ -113,8 +113,11 @@
             <div id="History" class="mb-12">
                 <p class="font-medium text-blue-500 pb-3">History</p>
                 <div class="mb-12">
-                    <p class="font-extralight text-sm pb-4">Average Gas Price (Last 7 days)</p>
+                    <p class="font-extralight text-sm pb-4">Average Gas Price (Last 7 days, aPhoton)</p>
                     <table class="w-full text-xs font-extralight">
+                    <tr>
+                        <td class="text-right italic">UTC</td>
+                    </tr>
                     {% for hour in hours %}
                     <tr>
                         <td class="text-right">{{ hour }}</td>
