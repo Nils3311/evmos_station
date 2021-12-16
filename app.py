@@ -163,6 +163,8 @@ def price_matrix():
     ).filter(
         Block_hist.time >= past_7_timestamp,
         Block_hist.time < today_timestamp
+    ).having(
+        func.avg(Block_hist.averageGasPrice) > 0
     ).group_by('day', 'hour').order_by(desc("averageGasPrice")).all()
 
     data = {}
@@ -180,10 +182,7 @@ def price_matrix():
             data[hour][day]["value"] = ""
             data[hour][day]["color"] = 0
 
-    try:
-        max_avgGasPrice = blocks[0]["averageGasPrice"]
-    except:
-        max_avgGasPrice = 7
+    max_avgGasPrice = blocks[0]["averageGasPrice"]
 
     # Fill DF
     for block in blocks:
