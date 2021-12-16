@@ -140,8 +140,14 @@
                         {% endfor %}
                     </tr>
                     {% endfor %}
-                    <tr>
-                        <td class="text-center text-"></td>
+                    <tr class="sm:hidden">
+                        <td class="text-center"></td>
+                        {% for day in days %}
+                        <td class="text-center">{{ day[:3] }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr class="hidden sm:table-row">
+                        <td class="text-center"></td>
                         {% for day in days %}
                         <td class="text-center">{{ day }}</td>
                         {% endfor %}
