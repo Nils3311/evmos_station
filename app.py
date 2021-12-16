@@ -124,17 +124,17 @@ def db_copytohist(timestamp_from, timestamp_to):
         func.avg(Block.gasLimit).label("avg_gasLimit"),
         func.avg(Block.averageGasPrice).label("avg_gasPrice"),
     ).filter(Block.timestamp >= timestamp_from, Block.timestamp <= timestamp_to).first()
-    if all(block is not None for block in hist_blocks):
-        hist_blockValue = Block_hist(
-            time=round(timestamp_from, 0),
-            transactions=hist_blocks['sum_transactions'],
-            gasLimit=hist_blocks['avg_gasLimit'],
-            gasUsed=hist_blocks['avg_gasUsed'],
-            averageFee=hist_blocks['avg_fee'],
-            averageGasPrice=hist_blocks['avg_gasPrice']
-        )
-        db.session.add(hist_blockValue)
-        db.session.commit()
+    hist_blockValue = Block_hist(
+        time=round(timestamp_from, 0),
+        transactions=hist_blocks['sum_transactions'],
+        gasLimit=hist_blocks['avg_gasLimit'],
+        gasUsed=hist_blocks['avg_gasUsed'],
+        averageFee=hist_blocks['avg_fee'],
+        averageGasPrice=hist_blocks['avg_gasPrice']
+    )
+    db.session.add(hist_blockValue)
+    print(f"Blocks between {timestamp_from} and {timestamp_to} have been copied to hist")
+    db.session.commit()
 
 def db_averageGas(numberofblock):
     blocks = db.session.query(Block).order_by(Block.number.desc()).limit(numberofblock).all()
@@ -195,7 +195,7 @@ def price_matrix():
         data[current_hour][current_day]["value"] = value
         data[current_hour][current_day]["color"] = color
         today = datetime.datetime.today()
-        if current_hour == (datetime.datetime.now()-datetime.timedelta(hours=1)).strftime("%H:00"):
+        if current_hour == (datetime.datetime.now()-datetime.timedelta(hours=1, minutes=10)).strftime("%H:00"):
             data[current_hour][current_day]["currentdatetime"] = 1
         else:
             data[current_hour][current_day]["currentdatetime"] = 0
@@ -215,7 +215,7 @@ def job_rollback():
 
 @scheduler.task('cron', id='job_cleandb', minute='*/10')
 def clean_db():
-    timestamp_to = round(datetime.datetime.now().timestamp(), 0)
+    timestamp_to = round(datetime.datetime.now().timestamp())
     timestamp_from = timestamp_to - 600
     db_copytohist(timestamp_from, timestamp_to)
     db_deleteoldblocks(timestamp_from)
