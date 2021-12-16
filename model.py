@@ -69,12 +69,14 @@ class Block_hist(db.Model):
     gasLimit = db.Column(db.BIGINT)
     averageFee = db.Column(db.BIGINT)
     averageGasPrice = db.Column(db.BIGINT)
+    sumGasPrice = db.Column(db.BIGINT)
     transactions = db.Column(db.BIGINT)
 
-    def __init__(self, time, gasUsed, gasLimit, averageFee, averageGasPrice, transactions):
+    def __init__(self, time, gasUsed, gasLimit, averageFee, averageGasPrice, sumGasPrice, transactions):
         self.time = time
         self.gasUsed = gasUsed
         self.gasLimit = gasLimit
         self.averageFee = averageFee
         self.averageGasPrice = averageGasPrice
+        self.sumGasPrice = sumGasPrice
         self.transactions = transactions

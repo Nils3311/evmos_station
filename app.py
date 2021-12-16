@@ -3,6 +3,7 @@ from flask import Flask, render_template, jsonify
 from flask_apscheduler import APScheduler
 import calendar
 from sqlalchemy import func, desc
+from sqlalchemy.sql import label
 import os
 
 from model import *
@@ -123,6 +124,7 @@ def db_copytohist(timestamp_from, timestamp_to):
         func.avg(Block.gasUsed).label("avg_gasUsed"),
         func.avg(Block.gasLimit).label("avg_gasLimit"),
         func.avg(Block.averageGasPrice).label("avg_gasPrice"),
+        func.sum(Block.averageGasPrice).label("sum_gasPrice"),
     ).filter(Block.timestamp >= timestamp_from, Block.timestamp <= timestamp_to).first()
     hist_blockValue = Block_hist(
         time=round(timestamp_from, 0),
@@ -130,7 +132,8 @@ def db_copytohist(timestamp_from, timestamp_to):
         gasLimit=hist_blocks['avg_gasLimit'],
         gasUsed=hist_blocks['avg_gasUsed'],
         averageFee=hist_blocks['avg_fee'],
-        averageGasPrice=hist_blocks['avg_gasPrice']
+        averageGasPrice=hist_blocks['avg_gasPrice'],
+        sumGasPrice=hist_blocks['sum_gasPrice']
     )
     db.session.add(hist_blockValue)
     print(f"Blocks between {timestamp_from} and {timestamp_to} have been copied to hist")
@@ -159,7 +162,7 @@ def price_matrix():
         func.date_part('day', func.to_timestamp(Block_hist.time)).label('day'),
         func.date_part('hour', func.to_timestamp(Block_hist.time)).label('hour'),
         func.avg(Block_hist.averageGasPrice).label('averageGasPrice'),
-        func.min(Block_hist.time).label('timestamp')
+        func.min(Block_hist.time).label('timestamp'),
     ).filter(
         Block_hist.time >= past_7_timestamp,
         Block_hist.time < today_timestamp
