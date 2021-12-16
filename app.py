@@ -182,7 +182,7 @@ def price_matrix():
             data[hour][day]["value"] = ""
             data[hour][day]["color"] = 0
 
-    max_avgGasPrice = blocks[0]["averageGasPrice"]
+    max_avgGasPrice = blocks[0]["averageGasPrice"]/1000000
 
     # Fill DF
     for block in blocks:
@@ -190,7 +190,7 @@ def price_matrix():
             value = ""
             color = 0
         else:
-            value = round(block.averageGasPrice)
+            value = round(block.averageGasPrice/1000000)
             color = (round(9 - value / max_avgGasPrice * 4))*100
         current_hour = str(int(block.hour)).zfill(2) + ":00"
         current_day = calendar.day_name[datetime.datetime.fromtimestamp(block.timestamp).weekday()]

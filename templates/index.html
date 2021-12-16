@@ -8,6 +8,7 @@
     <link href="../static/tailwind.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.2/chart.min.js" integrity="sha512-tMabqarPtykgDtdtSqCL3uLVM0gS1ZkUAVhRFu1vSEFgvB73niFQWJuvviDyBGBH22Lcau4rHB5p2K2T0Xvr6Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-gradient-to-br from-black to-blue-900 overscroll-none h-screen text-white overflow-scroll bg-fixed bg-black">
     <div class="">
@@ -17,10 +18,23 @@
             <p>{{ warning }}</p>
         </div>
         {% endif %}
-        <div id="header" class="sticky top-0 z-50 bg-gradient-to-b from-black lg:from-transparent to-transparent w-full p-6">
+        <div id="header" x-data="{ mobileMenuOpen : false }" class="flex justify-between sticky top-0 z-50 bg-gradient-to-b from-black lg:from-transparent to-transparent w-full p-6">
             <div id="logo">
                 <p class="font-bold text-4xl leading-none -mb-1">Evmos</p>
                 <p class="font-extralight text-xl leading-none pl-24">station</p>
+            </div>
+            <div id="menu" class="hidden sm:flex gap-8 font-medium h-full pt-2">
+                <p class="cursor-pointer transform hover:text-blue-500 transition hover:scale-105">Gas Monitoring</p>
+                <p class="cursor-pointer transform hover:text-blue-500 transition hover:scale-105">Validators</p>
+            </div>
+            <div @click="mobileMenuOpen = !mobileMenuOpen" id="menu_burger" class="sm:hidden flex flex-col gap-8 font-medium h-full mt-2 p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 fill-gray-600 transition hover:text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </div>
+            <div x-show="mobileMenuOpen" class="sm:hidden menur_burger_extended absolute right-6 top-16 text-right bg-black bg-opacity-25 p-4 -mr-2 rounded-xl" @click.outside="mobileMenuOpen = false">
+                <p class="cursor-pointer transform hover:text-blue-500 transition hover:scale-105 pb-2">Gas Monitoring</p>
+                <p class="cursor-pointer transform hover:text-blue-500 transition hover:scale-105">Validators</p>
             </div>
         </div>
         <div id="content" class="m-auto max-w-screen-sm flex flex-col justify-center pt-16 sm:pt-32 p-6">
@@ -46,7 +60,7 @@
                         </tr>
                     </table>
                     <div class="text-right pb-4 sm:pb-0">
-                        <p id="block_number" class="font-bold text-xl text-">sss</p>
+                        <p id="block_number" class="font-bold text-xl text-"></p>
                         <p id="block_timestamp" class="font-extralight text-sm"></p>
                     </div>
                 </div>
@@ -64,12 +78,12 @@
                         </div>
                         <div class="text-xl mb-6">
                             <p id="gasFast" class="inline font-bold"></p>
-                            <p class="inline font-extralight">aPhoton</p>
+                            <p class="inline font-extralight">aEvmos</p>
                         </div>
                         <div class="font-extralight text-xs">
                             <p class="inline">Transaction price</p>
                             <p id="gasFast_tx" class="inline"></p>
-                            <p class="inline">aP</p>
+                            <p class="inline">aE</p>
                         </div>
                     </div>
                     <div id="mediumgas" class="transform transition sm:hover:scale-105 sm:w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
@@ -82,12 +96,12 @@
                         </div>
                         <div class="text-xl mb-6">
                             <p id="gasMedium" class="inline font-bold"></p>
-                            <p class="inline font-extralight">aPhoton</p>
+                            <p class="inline font-extralight">aEvmos</p>
                         </div>
                         <div class="font-extralight text-xs">
                             <p class="inline">Transaction price</p>
                             <p id="gasMedium_tx" class="inline"></p>
-                            <p class="inline">aP</p>
+                            <p class="inline">aE</p>
                         </div>
                     </div>
                     <div id="slowgas" class="transform transition sm:hover:scale-105 sm:w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
@@ -100,12 +114,12 @@
                         </div>
                         <div class="text-xl mb-6">
                             <p id="gasSlow" class="inline font-bold"></p>
-                            <p class="inline font-extralight">aPhoton</p>
+                            <p class="inline font-extralight">aEvmos</p>
                         </div>
                         <div class="font-extralight text-xs">
                             <p class="inline">Transaction price</p>
                             <p id="gasSlow_tx" class="inline"></p>
-                            <p class="inline">aP</p>
+                            <p class="inline">aE</p>
                         </div>
                     </div>
                 </div>
@@ -113,8 +127,8 @@
             <div id="History" class="mb-12">
                 <p class="font-medium text-blue-500 pb-3">History</p>
                 <div class="mb-12">
-                    <p class="font-extralight text-sm pb-4">Average Gas Price (Last 7 days, aPhoton)</p>
-                    <table class="w-full text-xs font-extralight">
+                    <p class="font-extralight text-sm pb-4">Average Gas Price (Last 7 days, *10^6 aEvmos)</p>
+                    <table class="w-full text-xs font-extralight table-fixed">
                     <tr>
                         <td class="text-right italic">UTC</td>
                     </tr>
@@ -169,7 +183,7 @@
             response.json().then(function (data) {
                 console.log(response)
                 block_number.innerText = data.number.toLocaleString('de-DE')
-                block_basefee.innerText = data.baseFeePerGas + ' aPhoton'
+                block_basefee.innerText = data.baseFeePerGas + ' aEvmos'
                 block_size.innerText = data.size/1000 + ' kB'
                 block_usage.innerText = ((data.gasUsed / data.gasLimit)*100).toFixed(2) + ' %'
                 block_transaction.innerText = data.transactionCount
