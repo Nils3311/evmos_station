@@ -68,13 +68,13 @@ def db_createblock(blockheight):
     if len(feelist) > 0:
         blockValue.averageFee = sum(feelist)/len(feelist)
     else:
-        blockValue.averageFee = 0
+        blockValue.averageFee = None
     gaspricelist = [x.gasPrice * x.gas for x in blockValue.transactions.all()]
     total_gas = [x.gas for x in blockValue.transactions.all()]
     if len(gaspricelist) > 0:
         blockValue.averageGasPrice = sum(gaspricelist)/sum(total_gas)
     else:
-        blockValue.averageGasPrice = blockValue.baseFeePerGas
+        blockValue.averageGasPrice = None
     db.session.add(blockValue)
     db.session.commit()
 
@@ -118,7 +118,7 @@ def db_deleteoldhistblocks(olderthentimestamp):
 
 def db_copytohist(timestamp_from, timestamp_to):
     hist_blocks = db.session.query(
-        func.max(Block.transactionCount).label("sum_transactions"),
+        func.sum(Block.transactionCount).label("sum_transactions"),
         func.avg(Block.averageFee).label("avg_fee"),
         func.avg(Block.gasUsed).label("avg_gasUsed"),
         func.avg(Block.gasLimit).label("avg_gasLimit"),
@@ -180,13 +180,15 @@ def price_matrix():
             data[hour][day]["value"] = ""
             data[hour][day]["color"] = 0
 
-    max_avgGasPrice = blocks[0]["averageGasPrice"]
+    try:
+        max_avgGasPrice = blocks[0]["averageGasPrice"]
+    except:
+        max_avgGasPrice = 7
+
 
     # Fill DF
     for block in blocks:
         value = round(block.averageGasPrice)
-        # zw. 7 und max
-        # Ziel -> 500-900
         color = (round(9 - value / max_avgGasPrice * 4))*100
         current_hour = str(int(block.hour)).zfill(2) + ":00"
         current_day = calendar.day_name[datetime.datetime.fromtimestamp(block.timestamp).weekday()]
@@ -217,7 +219,7 @@ def clean_db():
     timestamp_from = timestamp_to - 600
     db_copytohist(timestamp_from, timestamp_to)
     db_deleteoldblocks(timestamp_from)
-    db_deleteoldhistblocks(timestamp_to - (8 * 24 * 60 * 60))
+    db_deleteoldhistblocks(timestamp_to - (10 * 24 * 60 * 60))
 
 
 # TODO Vorbefüllen mit aktuellen Werten damit es beim Laden nicht ploppt
@@ -246,7 +248,6 @@ def index():
         warning=warning
     )
 
-# TODO TailwindCSS 3.0
 # TODO Tailwind Deploy Automation
 # TODO Block Time berechnen um nicht 9 Sekunden pro Block statisch auszugeben
 @app.route('/blockstatus', methods=['POST'])
