@@ -204,7 +204,7 @@ def price_matrix():
         if (
                 current_hour == (datetime.datetime.now()-datetime.timedelta(hours=1, minutes=10)).strftime("%H:00")
                 and
-                current_day == calendar.day_name[datetime.date.weekday()]
+                current_day == calendar.day_name[datetime.datetime.today().weekday()]
         ):
             data[current_hour][current_day]["currentdatetime"] = 1
         else:
