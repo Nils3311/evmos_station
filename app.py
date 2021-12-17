@@ -161,14 +161,13 @@ def price_matrix():
     blocks = db.session.query(
         func.date_part('day', func.to_timestamp(Block_hist.time)).label('day'),
         func.date_part('hour', func.to_timestamp(Block_hist.time)).label('hour'),
-        func.avg(Block_hist.averageGasPrice).label('averageGasPrice'),
+        func.sum(Block_hist.sumGasPrice).label('sumGasPrice'),
+        func.sum(Block_hist.transactions).label('sumTransactions'),
         func.min(Block_hist.time).label('timestamp'),
     ).filter(
         Block_hist.time >= past_7_timestamp,
         Block_hist.time < today_timestamp
-    ).having(
-        func.avg(Block_hist.averageGasPrice) > 0
-    ).group_by('day', 'hour').order_by(desc("averageGasPrice")).all()
+    ).group_by('day', 'hour').all()
 
     data = {}
     hours = [str(i).zfill(2)+":00" for i in range(24)]
@@ -185,18 +184,19 @@ def price_matrix():
             data[hour][day]["value"] = ""
             data[hour][day]["color"] = 0
 
-    max_avgGasPrice = blocks[0]["averageGasPrice"]/1000000
+    max_avgGasPrice = max([block.sumGasPrice/block.sumTransactions for block in blocks if block.sumGasPrice is not None])/1000000
 
     # Fill DF
     for block in blocks:
-        if block.averageGasPrice is None:
-            value = ""
+        if block.sumGasPrice is None:
+            value = "-"
             color = 0
         else:
-            value = round(block.averageGasPrice/1000000)
+            value = round((block.sumGasPrice/block.sumTransactions)/1000000)
             color = (round(9 - value / max_avgGasPrice * 4))*100
         current_hour = str(int(block.hour)).zfill(2) + ":00"
-        current_day = calendar.day_name[datetime.datetime.fromtimestamp(block.timestamp).weekday()]
+        # Timestamp minus 60 Minutes because of UTC Time of the rest of the Query
+        current_day = calendar.day_name[datetime.datetime.fromtimestamp(block.timestamp-60*60).weekday()]
         data[current_hour][current_day]["value"] = value
         data[current_hour][current_day]["color"] = color
         today = datetime.datetime.today()
