@@ -1,7 +1,9 @@
 import requests
+import json
 
 #rpc = 'https://evmos-testnet.gateway.pokt.network/v1/lb/61ac07b995d548003aedf5ee'
 rpc = 'https://ethereum.rpc.evmos.dev/'
+#rpc = 'https://evmos-rpc.mercury-nodes.net/'
 
 #TODO How to handle if RPC is not anawering
 
@@ -34,3 +36,6 @@ def eth_getblock_data(blockheight='latest'):
         "id": 1,
     }
     return requests.post(rpc, json=payload).json()['result']
+
+
+

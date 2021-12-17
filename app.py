@@ -3,7 +3,6 @@ from flask import Flask, render_template, jsonify
 from flask_apscheduler import APScheduler
 import calendar
 from sqlalchemy import func, desc
-from sqlalchemy.sql import label
 import os
 
 from model import *
@@ -92,9 +91,10 @@ def db_update():
             db_block = eth_block - 120
         for block in range(db_block+1, eth_block):
             db_createblock(block)
-            print(f"{block} has been written to DB")
+            print(f"Block {block} --> db.block")
     else:
-        print("DB has heighest block")
+        print("db.block has heighest block")
+
 
 # TODO Delete Transactions older then 7 days
 def db_deleteoldblocks(olderthentimestamp):
@@ -103,7 +103,7 @@ def db_deleteoldblocks(olderthentimestamp):
     for block in oldBlocks:
         db.session.delete(block)
     db.session.commit()
-    print(f"Older then {datetime.datetime.fromtimestamp(olderthentimestamp)} deleted from DB")
+    print(f"Block < {datetime.datetime.fromtimestamp(olderthentimestamp)} deleted --> db.block")
     db.session.commit()
 
 
@@ -113,7 +113,7 @@ def db_deleteoldhistblocks(olderthentimestamp):
     for block in oldBlocks:
         db.session.delete(block)
     db.session.commit()
-    print(f"History older then {datetime.datetime.fromtimestamp(olderthentimestamp)} deleted from DB")
+    print(f"Block < {datetime.datetime.fromtimestamp(olderthentimestamp)} deleted --> db.block_history")
     db.session.commit()
 
 
@@ -136,8 +136,9 @@ def db_copytohist(timestamp_from, timestamp_to):
         sumGasPrice=hist_blocks['sum_gasPrice']
     )
     db.session.add(hist_blockValue)
-    print(f"Blocks between {timestamp_from} and {timestamp_to} have been copied to hist")
+    print(f"db.block >= {timestamp_from} and <= {timestamp_to} --> db.block_hist")
     db.session.commit()
+
 
 def db_averageGas(numberofblock):
     blocks = db.session.query(Block).order_by(Block.number.desc()).limit(numberofblock).all()
@@ -184,7 +185,7 @@ def price_matrix():
             data[hour][day]["value"] = ""
             data[hour][day]["color"] = 0
 
-    max_avgGasPrice = max([block.sumGasPrice/block.sumTransactions for block in blocks if block.sumGasPrice is not None])/1000000
+    max_avgGasPrice = max([block.sumGasPrice/block.sumTransactions for block in blocks if block.sumGasPrice is not None], default=0)/1000000
 
     # Fill DF
     for block in blocks:
@@ -200,7 +201,11 @@ def price_matrix():
         data[current_hour][current_day]["value"] = value
         data[current_hour][current_day]["color"] = color
         today = datetime.datetime.today()
-        if current_hour == (datetime.datetime.now()-datetime.timedelta(hours=1, minutes=10)).strftime("%H:00"):
+        if (
+                current_hour == (datetime.datetime.now()-datetime.timedelta(hours=1, minutes=10)).strftime("%H:00")
+                and
+                current_day == calendar.day_name[datetime.date.weekday()]
+        ):
             data[current_hour][current_day]["currentdatetime"] = 1
         else:
             data[current_hour][current_day]["currentdatetime"] = 0
@@ -208,9 +213,17 @@ def price_matrix():
     return data, days, hours
 
 
+def get_validators():
+    url = 'https://evmos-api.mercury-nodes.net/staking/validators'
+    res = requests.get(url)
+    d = json.loads(res.text)
+    return [validator_loader(x) for x in d['result']]
+
+
 @scheduler.task('interval', id='job_dbupdate', seconds=10, misfire_grace_time=30)
 def job_dbupdate():
     db_update()
+
 
 # TODO Bug richtig fixen
 @scheduler.task('cron', id='job_rollbackb', minute='*/5')
@@ -225,6 +238,20 @@ def clean_db():
     db_copytohist(timestamp_from, timestamp_to)
     db_deleteoldblocks(timestamp_from)
     db_deleteoldhistblocks(timestamp_to - (10 * 24 * 60 * 60))
+
+
+# TODO uncomment
+# @scheduler.task('cron', id='job_validatorupdate', minute='*/30', next_run_time=datetime.datetime.now())
+def validator_update():
+    print("Updating Validators")
+    allvalidators = get_validators()
+    Validator.query.delete()
+    db.session.commit()
+    for validator in allvalidators:
+        db.make_transient(validator)
+        db.session.add(validator)
+    db.session.commit()
+    print("Validators --> db.validator")
 
 
 # TODO Vorbefüllen mit aktuellen Werten damit es beim Laden nicht ploppt

@@ -1,4 +1,3 @@
-from sqlalchemy import func
 from flask_sqlalchemy import SQLAlchemy
 
 # SQLAlchemy
@@ -80,3 +79,52 @@ class Block_hist(db.Model):
         self.averageGasPrice = averageGasPrice
         self.sumGasPrice = sumGasPrice
         self.transactions = transactions
+
+
+class Validator(db.Model):
+    id = db.Column(db.BIGINT, primary_key=True)
+    address = db.Column(db.String(100))
+    tokens = db.Column(db.String(100))
+    moniker = db.Column(db.String(100))
+    delegator_shares = db.Column(db.String(500))
+    comission_rate = db.Column(db.String(500))
+    website = db.Column(db.String(500))
+    details = db.Column(db.String(500))
+
+    def __init__(
+            self,
+            address: str,
+            tokens: int,
+            delegator_shares: float,
+            moniker: str,
+            comission_rate: float,
+            website: str,
+            details: str
+    ):
+        self.address = address
+        self.tokens = tokens
+        self.delegator_shares = delegator_shares
+        self.moniker = moniker
+        self.comission_rate = comission_rate
+        self.website = website
+        self.details = details
+
+
+def validator_loader(v: dict) -> Validator:
+    if 'website' in v['description']:
+        website = v['description']['website']
+    else:
+        website = ""
+    if 'details' in v['description']:
+        details = v['description']['details']
+    else:
+        details = ""
+    return Validator(
+        address=v['operator_address'],
+        tokens=v['tokens'],
+        delegator_shares=float(v['delegator_shares']),
+        moniker=v['description']['moniker'],
+        comission_rate=v['commission']['commission_rates']['rate'],
+        website=website,
+        details=details
+    )
