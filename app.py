@@ -11,7 +11,7 @@ from evmos_util import *
 from model import *
 
 # Variable
-SYNC_NUMBER = 93000  #one Week
+SYNC_NUMBER = 7 * 24 * 60 * 10  #one Week
 
 # Init App and Database Databsase
 app = Flask(__name__)
