@@ -93,7 +93,7 @@ def db_update():
         db_block = db_block.number
     if eth_block > db_block:
         if eth_block > db_block + SYNC_NUMBER:
-            db_block = eth_block - SYNC_NUMBER
+            db_block = 291500
         for block in range(db_block + 1, eth_block):
             db_createblock(block)
             print(f"Block {block} --> db.block")
