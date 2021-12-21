@@ -11,7 +11,7 @@ from evmos_util import *
 from model import *
 
 # Variable
-SYNC_NUMBER = 100  # 93000  #one Week
+SYNC_NUMBER = 93000  #one Week
 
 # Init App and Database Databsase
 app = Flask(__name__)
@@ -93,7 +93,7 @@ def db_update():
         db_block = db_block.number
     if eth_block > db_block:
         if eth_block > db_block + SYNC_NUMBER:
-            db_block = 291500
+            db_block = eth_block - SYNC_NUMBER
         for block in range(db_block + 1, eth_block):
             db_createblock(block)
             print(f"Block {block} --> db.block")
