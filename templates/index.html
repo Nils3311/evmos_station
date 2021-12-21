@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-gradient-to-br from-black to-blue-900 overscroll-none h-screen text-white overflow-scroll bg-fixed bg-black">
+<body class="bg-gradient-to-br from-black to-blue-900 h-screen text-white bg-fixed bg-black">
     <div class="">
         {% if warning is not none %}
         <div class="py-2 flex flex-col sm:flex-row justify-center items-center bg-red-500 gap-1">
@@ -32,7 +32,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
             </button>
-            <div x-show="mobileMenuOpen" class="sm:hidden menur_burger_extended absolute right-6 top-16 text-right bg-black bg-opacity-25 p-4 -mr-2 rounded-xl" @click.outside="mobileMenuOpen = false">
+            <div x-show="mobileMenuOpen" class="flex flex-col sm:hidden menur_burger_extended absolute right-6 top-16 text-right bg-black bg-opacity-25 p-4 -mr-2 rounded-xl" @click.outside="mobileMenuOpen = false">
                 <a class="cursor-pointer transform text-blue-500 transition hover:scale-105 pb-2" href={{ url_for('gas') }}>Monitoring</a>
                 <a class="cursor-pointer transform transition hover:scale-105" href={{ url_for('validators') }}>Validators</a>
             </div>
@@ -128,16 +128,16 @@
                 <p class="font-medium text-blue-500 pb-3">History</p>
                 <table class="font-extralight text-sm mb-12">
                     <tr>
-                        <td>Sum of Transactions (last 24 h)</td>
-                        <td id="hist_tx" class="font-bold"></td>
+                        <td>Transactions, past 24h</td>
+                        <td id="hist_tx" class="font-bold pl-2"></td>
                     </tr>
                     <tr>
-                        <td>Average Gas Price (last 24 h)</td>
-                        <td id="hist_fee" class="font-bold"></td>
+                        <td>Avg. Gas Price, past 24h</td>
+                        <td id="hist_fee" class="font-bold pl-2"></td>
                     </tr>
                     <tr>
-                        <td class="pr-4">Average Transaction/s (last 24 h)</td>
-                        <td id="hist_txs" class="font-bold"></td>
+                        <td>Avg tx/s, past 24h</td>
+                        <td id="hist_txs" class="font-bold pl-2"></td>
                     </tr>
                 </table>
                 <div class="mb-12">
@@ -216,7 +216,7 @@
                 gas_slow.innerText = data.gas_avgFee[20]
                 gas_slow_tx.innerText = data.gas_avgFee[20] * 21000
                 hist_tx.innerText = data.hist_sum_tx
-                hist_fee.innerText = Math.round(data.hist_avg_fee * 100) / 100 + ' aEvmos'
+                hist_fee.innerText = Math.round(data.hist_avg_fee) + ' aE'
                 hist_txs.innerText = Math.round(data.hist_sum_tx / (24 * 60 * 60) * 10000) / 10000
             })
         })

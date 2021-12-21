@@ -347,7 +347,7 @@ def block_status():
         func.sum(Block_hist.transactions).label("sum_transactions"),
         func.sum(Block_hist.sumGasPrice).label("sum_gasprice")
     ).filter(
-        Block_hist.time >= (datetime.datetime.now().timestamp() - 7 * 24 * 60 * 60)
+        Block_hist.time >= (datetime.datetime.now().timestamp() - 24 * 60 * 60)
     ).first()
     data['hist_sum_tx'] = 0 if hist_transactions['sum_transactions'] is None else hist_transactions['sum_transactions']
     if data['hist_sum_tx'] == 0:
