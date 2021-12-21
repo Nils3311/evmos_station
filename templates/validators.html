@@ -106,39 +106,42 @@
                         </a>
                     {% endif %}
                 </div>
-                <div class="flex flex-col flex-row gap-12">
+                <a class="flex flex-col flex-row gap-12">
                     {% for validator in validators %}
-                    <div class="z-0 transform transition sm:hover:scale-105 bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl p-4 -m-4">
-                         <div class="pb-4">
-                            <p class="">{{ validator.moniker }}</p>
-                            <p class="font-extralight text-xs pr-12 sm:pr-0 break-words">{{ validator.address }}</p>
-                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 font-extralight text-xs w-full ">
-                            <td class="">
-                                <div class="flex items-center gap-1">
-                                    <svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10zM15 12h-1v8h-4v-8H6.081L12 4.601L17.919 12H15z" fill="currentColor"/></svg>
-                                    <p>Voting Power</p>
-                                    <p class="font-bold">{{ (validator.power_share * 100)|round(4) }}%</p>
+                        <div onclick="window.location='{{ url_for('validator_details', address=validator.address)}}'" class="cursor-pointer z-0 transform transition sm:hover:scale-105 bg-gradient-to-bl {% if validator.jailed %} from-red-900 to-red-500 {% else %} from-indigo-900 to-purple-800 {% endif %} rounded-3xl p-4 -m-4">
+                            <div class="pb-4">
+                                <div class="flex justify-between items-center">
+                                    <p class="inline">{{ validator.moniker }}</p>
+                                    {% if validator.jailed %} <p class="inline border-2 rounded-md text-xs p-2">Jailed</p> {% endif %}
                                 </div>
-                            </td>
-                            <td class="">
-                                <div class="flex items-center gap-1">
-                                    <span class="iconify" data-icon="ant-design:pie-chart-outlined"></span>
-                                    <p>Validator Share</p>
-                                    <p class="font-bold">{{ (validator.self_share * 100)|round(2) }}%</p>
-                                </div>
-                            </td>
-                            <td class="">
-                                <div class="flex items-center gap-1">
-                                    <span class="iconify" data-icon="akar-icons:share-box"></span>
-                                    <p>Comission Rate</p>
-                                    <p class="font-bold">{{ (validator.comission_rate * 100)|round(2) }}%</p>
-                                </div>
-                            </td>
+                                <p class="font-extralight text-xs pr-12 sm:pr-0 break-words">{{ validator.address }}</p>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 font-extralight text-xs w-full ">
+                                <td class="">
+                                    <div class="flex items-center gap-1">
+                                        <svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10zM15 12h-1v8h-4v-8H6.081L12 4.601L17.919 12H15z" fill="currentColor"/></svg>
+                                        <p>Voting Power</p>
+                                        <p class="font-bold">{{ (validator.power_share * 100)|round(4) }}%</p>
+                                    </div>
+                                </td>
+                                <td class="">
+                                    <div class="flex items-center gap-1">
+                                        <span class="iconify" data-icon="ant-design:pie-chart-outlined"></span>
+                                        <p>Validator Share</p>
+                                        <p class="font-bold">{{ (validator.self_share * 100)|round(2) }}%</p>
+                                    </div>
+                                </td>
+                                <td class="">
+                                    <div class="flex items-center gap-1">
+                                        <span class="iconify" data-icon="akar-icons:share-box"></span>
+                                        <p>Comission Rate</p>
+                                        <p class="font-bold">{{ (validator.comission_rate * 100)|round(2) }}%</p>
+                                    </div>
+                                </td>
+                            </div>
                         </div>
-                    </div>
                     {% endfor %}
-                    <div class="flex items-center justify-end">
+                    <div class="flex items-center justify-end pt-8">
                         {% if page > 1 %}
                             <a href={{ url_for('validators', page=page - 1, order_by=order_by, oder=order) }}>
                                 <span class="iconify" data-icon="akar-icons:chevron-left"></span>

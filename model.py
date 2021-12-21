@@ -92,6 +92,8 @@ class Validator(db.Model):
     comission_rate = db.Column(db.FLOAT)
     website = db.Column(db.String(500))
     details = db.Column(db.String(500))
+    jailed = db.Column(db.Boolean)
+    status = db.Column(db.String(100))
 
     def __init__(
             self,
@@ -102,7 +104,9 @@ class Validator(db.Model):
             self_share: float,
             comission_rate: float,
             website: str,
-            details: str
+            details: str,
+            jailed: str,
+            status: str
     ):
         self.address = address
         self.tokens = tokens
@@ -112,6 +116,8 @@ class Validator(db.Model):
         self.comission_rate = comission_rate
         self.website = website
         self.details = details
+        self.status = status
+        self.jailed = jailed
 
 
 
@@ -134,5 +140,7 @@ def validator_loader(v: dict) -> Validator:
         moniker=v['description']['moniker'],
         comission_rate=round(float(v['commission']['commission_rates']['rate']), 4),
         website=website,
-        details=details
+        details=details,
+        jailed=v['jailed'],
+        status=v['status']
     )
