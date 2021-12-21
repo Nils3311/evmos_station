@@ -161,7 +161,7 @@ def price_matrix():
     today_date = datetime.date.today() + datetime.timedelta(days=1)
     past_7_date = today_date - datetime.timedelta(days=7)
     today_timestamp = datetime.datetime.strptime(today_date.strftime("%d.%m.%Y"), "%d.%m.%Y").timestamp()
-    past_7_timestamp = datetime.datetime.strptime(past_7_date.strftime("%d.%m.%Y"), "%d.%m.%Y").timestamp() + 60 * 60
+    past_7_timestamp = datetime.datetime.strptime(past_7_date.strftime("%d.%m.%Y"), "%d.%m.%Y").timestamp()
 
     blocks = db.session.query(
         func.date_part('day', func.to_timestamp(Block_hist.time)).label('day'),
