@@ -159,7 +159,7 @@ def db_averageGas(numberofblock):
 
 def price_matrix():
     today_date = datetime.date.today() + datetime.timedelta(days=1)
-    past_7_date = today_date - datetime.timedelta(days=8)
+    past_7_date = today_date - datetime.timedelta(days=7)
     today_timestamp = datetime.datetime.strptime(today_date.strftime("%d.%m.%Y"), "%d.%m.%Y").timestamp()
     past_7_timestamp = datetime.datetime.strptime(past_7_date.strftime("%d.%m.%Y"), "%d.%m.%Y").timestamp()
 
@@ -220,7 +220,6 @@ def price_matrix():
 
 
 def get_validators():
-    # url = 'https://evmos-api.mercury-nodes.net/staking/validators'
     url = 'https://evmos-api.mercury-nodes.net/cosmos/staking/v1beta1/validators?pagination.limit=10000&pagination.count_total=true'
     res = requests.get(url)
     d = json.loads(res.text)
@@ -255,7 +254,6 @@ def clean_db():
     db_deleteoldhistblocks(timestamp_to - (10 * 24 * 60 * 60))  # Delete hist older than 10 days
 
 
-
 @scheduler.task('cron', id='job_validatorupdate', minute='*/30', next_run_time=datetime.datetime.now())
 def validator_update():
     print("Updating Validators")
@@ -273,7 +271,7 @@ def validator_update():
     print("Validators --> db.validator")
 
 
-# TODO ausklappen/mehr Zeigen wenn man auf einen Validator klickt
+# TODO ausklappen wenn auf Scheduler
 @app.route('/validators')
 def validators():
     page = request.args.get('page')
@@ -322,6 +320,7 @@ def index():
 
 # TODO Vorbefüllen mit aktuellen Werten damit es beim Laden nicht ploppt
 # TODO Hinweis wenn der RPC nicht reagiert
+# TODO Warning Animation zum Ausfahren von oben geben
 @app.route('/gas')
 def gas():
     time = []
