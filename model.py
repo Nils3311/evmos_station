@@ -10,7 +10,7 @@ class Transaction(db.Model):
     gas = db.Column(db.BIGINT)
     tx_type = db.Column(db.BIGINT)
     hash = db.Column(db.String(100))
-    value = db.Column(db.BIGINT)
+    value = db.Column(db.NUMERIC(38,0))
     addr_to = db.Column(db.String(100))
     addr_from = db.Column(db.String(100))
     maxPriorityFeePerGas = db.Column(db.BIGINT)
@@ -84,10 +84,12 @@ class Block_hist(db.Model):
 class Validator(db.Model):
     id = db.Column(db.BIGINT, primary_key=True)
     address = db.Column(db.String(100))
-    tokens = db.Column(db.String(100))
+    tokens = db.Column(db.NUMERIC(38,0))
     moniker = db.Column(db.String(100))
-    delegator_shares = db.Column(db.String(500))
-    comission_rate = db.Column(db.String(500))
+    delegator_shares = db.Column(db.NUMERIC(38,0))
+    self_share = db.Column(db.FLOAT)
+    power_share = db.Column(db.FLOAT)
+    comission_rate = db.Column(db.FLOAT)
     website = db.Column(db.String(500))
     details = db.Column(db.String(500))
 
@@ -97,6 +99,7 @@ class Validator(db.Model):
             tokens: int,
             delegator_shares: float,
             moniker: str,
+            self_share: float,
             comission_rate: float,
             website: str,
             details: str
@@ -105,9 +108,11 @@ class Validator(db.Model):
         self.tokens = tokens
         self.delegator_shares = delegator_shares
         self.moniker = moniker
+        self.self_share = self_share
         self.comission_rate = comission_rate
         self.website = website
         self.details = details
+
 
 
 def validator_loader(v: dict) -> Validator:
@@ -119,12 +124,15 @@ def validator_loader(v: dict) -> Validator:
         details = v['description']['details']
     else:
         details = ""
+    tokens = int(v['tokens'])
+    delegator_shares = round(float(v['delegator_shares']), 2)
     return Validator(
         address=v['operator_address'],
-        tokens=v['tokens'],
-        delegator_shares=float(v['delegator_shares']),
+        tokens=tokens,
+        delegator_shares=delegator_shares,
+        self_share=tokens/delegator_shares,
         moniker=v['description']['moniker'],
-        comission_rate=v['commission']['commission_rates']['rate'],
+        comission_rate=round(float(v['commission']['commission_rates']['rate']), 4),
         website=website,
         details=details
     )

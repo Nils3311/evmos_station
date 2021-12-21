@@ -1,13 +1,14 @@
-import datetime
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request, redirect, url_for
 from flask_apscheduler import APScheduler
-import calendar
-from sqlalchemy import func, desc
-import os
+from sqlalchemy import func, desc, text
+import os, math, calendar, datetime
 
 from model import *
 from evmos_util import *
 
+
+# Variable
+SYNC_NUMBER = 93000  #one Week
 
 # Init App and Database Databsase
 app = Flask(__name__)
@@ -87,8 +88,9 @@ def db_update():
     else:
         db_block = db_block.number
     if eth_block > db_block:
-        if eth_block > db_block + 120:
-            db_block = eth_block - 120
+        # TODO Prüfen von wann an
+        if eth_block > db_block + SYNC_NUMBER:
+            db_block = eth_block - SYNC_NUMBER
         for block in range(db_block+1, eth_block):
             db_createblock(block)
             print(f"Block {block} --> db.block")
@@ -96,7 +98,6 @@ def db_update():
         print("db.block has heighest block")
 
 
-# TODO Delete Transactions older then 7 days
 def db_deleteoldblocks(olderthentimestamp):
     # TODO UTC Zeitverschiebung prüfen
     oldBlocks = Block.query.filter(Block.timestamp < olderthentimestamp).all()
@@ -233,31 +234,77 @@ def job_rollback():
 
 @scheduler.task('cron', id='job_cleandb', minute='*/10')
 def clean_db():
-    timestamp_to = round(datetime.datetime.now().timestamp())
-    timestamp_from = timestamp_to - 600
-    db_copytohist(timestamp_from, timestamp_to)
-    db_deleteoldblocks(timestamp_from)
-    db_deleteoldhistblocks(timestamp_to - (10 * 24 * 60 * 60))
+    # copy all data to hist
+    oldest_timestamp = db.session.query(Block).order_by(Block.number.asc()).first().timestamp
+    newest_timestamp = db.session.query(Block).order_by(Block.number.desc()).first().timestamp
+    oldest_time = datetime.datetime.fromtimestamp(oldest_timestamp)
+    timestamp_from = oldest_time.replace(minute=math.floor(oldest_time.minute / 10) * 10, second=0,
+                                         microsecond=0).timestamp()
+    timestamp_to = timestamp_from + 10 * 60
+    while timestamp_to < newest_timestamp:
+        # TODO was machen wenn kein hist Block vorhanden?
+        db_copytohist(timestamp_from, timestamp_to)
+        db_deleteoldblocks(timestamp_to)
+        timestamp_from = timestamp_to
+        timestamp_to = timestamp_to + 10 * 60
+    db_deleteoldhistblocks(timestamp_to - (10 * 24 * 60 * 60))  # Delete hist older than 10 days
 
 
-# TODO uncomment
-# @scheduler.task('cron', id='job_validatorupdate', minute='*/30', next_run_time=datetime.datetime.now())
+@scheduler.task('cron', id='job_validatorupdate', minute='*/30', next_run_time=datetime.datetime.now())
 def validator_update():
     print("Updating Validators")
     allvalidators = get_validators()
+    maxPower = sum([validator.tokens for validator in allvalidators])
     Validator.query.delete()
     db.session.commit()
     for validator in allvalidators:
+        validator.power_share = validator.tokens/maxPower
         db.make_transient(validator)
         db.session.add(validator)
     db.session.commit()
     print("Validators --> db.validator")
 
 
-# TODO Vorbefüllen mit aktuellen Werten damit es beim Laden nicht ploppt
-# TODO Hinweis wenn der RPC nicht reagiert
+@app.route('/validators')
+def validators():
+    page = request.args.get('page')
+    if page is not None and page.isdigit():
+        page = int(page)
+    else:
+        page = 1
+    order_by = request.args.get('order_by')
+    order_by_list = ['power_share', 'moniker', 'comission_rate', 'self_share']
+    if order_by not in order_by_list:
+        order_by = order_by_list[0]
+    order = request.args.get('order')
+    order_list = ['desc', 'asc']
+    if order not in order_list:
+        order = order_list[0]
+    pagenumber = round(len(Validator.query.all())/25)
+    maxPower = db.session.query(func.sum(Validator.tokens).label("sum_tokens")).first()
+    return render_template(
+        "validators.html",
+        validators=Validator.query.order_by(text(order_by+" "+order), 'moniker').offset(25 * (page - 1)).limit(25).all(),
+        pagenumber=pagenumber,
+        page=page,
+        order_by=order_by,
+        order=order,
+        maxPower=maxPower.sum_tokens,
+        warning=None
+    )
+
+
 @app.route('/')
 def index():
+    return redirect(url_for('gas'))
+
+
+# TODO Vorbefüllen mit aktuellen Werten damit es beim Laden nicht ploppt
+# TODO Hinweis wenn der RPC nicht reagiert
+# TODO Transactions in the last 24 hours (and tx/seconds)
+# TODO Average Gas Price last 24 Hours
+@app.route('/gas')
+def gas():
     time = []
     transactions = []
     matrix, days, hours = price_matrix()
@@ -282,22 +329,33 @@ def index():
 
 # TODO Tailwind Deploy Automation
 # TODO Block Time berechnen um nicht 9 Sekunden pro Block statisch auszugeben
-@app.route('/blockstatus', methods=['POST'])
+@app.route('/blockstatus', methods=['POST', 'GET'])
 def block_status():
-    try:
-        data = db_lastblock()
-        if data is not None:
-            data = data.as_dict()
-        data['timestamp_str'] = datetime.datetime.fromtimestamp(data['timestamp']).strftime('%Y/%m/%d %H:%M:%S')
-        averageGas = {}
-        blocks = [1, 6, 20]
-        for count, i in enumerate(blocks):
-            averageGas[i] = db_averageGas(i)
-            if count > 1 and averageGas[i] > averageGas[blocks[count-1]]:
-                averageGas[i] = averageGas[blocks[count-1]]
-        data['gas_avgFee'] = averageGas
-    except:
-        data = []
+    #try:
+    data = db_lastblock()
+    if data is not None:
+        data = data.as_dict()
+    data['timestamp_str'] = datetime.datetime.fromtimestamp(data['timestamp']).strftime('%Y/%m/%d %H:%M:%S')
+    averageGas = {}
+    blocks = [1, 6, 20]
+    for count, i in enumerate(blocks):
+        averageGas[i] = db_averageGas(i)
+        if count > 1 and averageGas[i] > averageGas[blocks[count-1]]:
+            averageGas[i] = averageGas[blocks[count-1]]
+    data['gas_avgFee'] = averageGas
+    hist_transactions = db.session.query(
+        func.sum(Block_hist.transactions).label("sum_transactions"),
+        func.sum(Block_hist.sumGasPrice).label("sum_gasprice")
+    ).filter(
+        Block_hist.time >= (datetime.datetime.now().timestamp() - 7 * 24 * 60 * 60)
+    ).first()
+    data['hist_sum_tx'] = 0 if hist_transactions['sum_transactions'] is None else hist_transactions['sum_transactions']
+    if data['hist_sum_tx'] == 0:
+        data['hist_avg_fee'] = 0
+    else:
+        data['hist_avg_fee'] = 0 if hist_transactions['sum_gasprice'] is None else hist_transactions['sum_gasprice']/hist_transactions['sum_transactions']
+    #except:
+    #data = []
     return jsonify(data)
 
 

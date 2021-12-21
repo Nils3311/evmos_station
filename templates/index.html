@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Evmosstation Gas Monitoring</title>
+    <title>Evmosstation Monitoring</title>
     <link rel="icon" href="../static/favicon.png" sizes="32x32" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="../static/tailwind.css" rel="stylesheet">
@@ -19,25 +19,25 @@
         </div>
         {% endif %}
         <div id="header" x-data="{ mobileMenuOpen : false }" class="flex justify-between sticky top-0 z-50 bg-gradient-to-b from-black lg:from-transparent to-transparent w-full p-6">
-            <div id="logo">
+            <a href={{ url_for('index') }} id="logo">
                 <p class="font-bold text-4xl leading-none -mb-1">Evmos</p>
                 <p class="font-extralight text-xl leading-none pl-24">station</p>
+            </a>
+            <div id="menu" class="hidden sm:flex gap-8 font-medium pt-2 h-full">
+                <a class="cursor-pointer transform text-blue-500 transition hover:scale-105" href={{ url_for('gas') }}>Monitoring</a>
+                <a class="cursor-pointer transform transition hover:scale-105" href={{ url_for('validators') }}>Validators</a>
             </div>
-            <div id="menu" class="hidden sm:flex gap-8 font-medium h-full pt-2">
-                <p class="cursor-pointer transform hover:text-blue-500 transition hover:scale-105">Gas Monitoring</p>
-                <p class="cursor-pointer transform hover:text-blue-500 transition hover:scale-105">Validators</p>
-            </div>
-            <div @click="mobileMenuOpen = !mobileMenuOpen" id="menu_burger" class="sm:hidden flex flex-col gap-8 font-medium h-full mt-2 p-1">
+            <button @click="mobileMenuOpen = !mobileMenuOpen" id="menu_burger" class="sm:hidden flex flex-col gap-8 font-medium h-full mt-2 p-1 focus:outline-none">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition hover:text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
-            </div>
+            </button>
             <div x-show="mobileMenuOpen" class="sm:hidden menur_burger_extended absolute right-6 top-16 text-right bg-black bg-opacity-25 p-4 -mr-2 rounded-xl" @click.outside="mobileMenuOpen = false">
-                <p class="cursor-pointer transform hover:text-blue-500 transition hover:scale-105 pb-2">Gas Monitoring</p>
-                <p class="cursor-pointer transform hover:text-blue-500 transition hover:scale-105">Validators</p>
+                <a class="cursor-pointer transform text-blue-500 transition hover:scale-105 pb-2" href={{ url_for('gas') }}>Monitoring</a>
+                <a class="cursor-pointer transform transition hover:scale-105" href={{ url_for('validators') }}>Validators</a>
             </div>
         </div>
-        <div id="content" class="m-auto max-w-screen-sm flex flex-col justify-center pt-16 sm:pt-32 p-6">
+        <div id="content" class="m-auto max-w-screen-sm flex flex-col justify-center sm:pt-20 pt-8 p-6">
             <div id="lastblock" class="mb-16">
                 <p class="font-medium text-blue-500 pb-3">Last Block</p>
                 <div class="flex flex-col-reverse sm:flex-row justify-between">
@@ -126,8 +126,22 @@
             </div>
             <div id="History" class="mb-12">
                 <p class="font-medium text-blue-500 pb-3">History</p>
+                <table class="font-extralight text-sm mb-12">
+                    <tr>
+                        <td>Sum of Transactions (last 24 h)</td>
+                        <td id="hist_tx" class="font-bold"></td>
+                    </tr>
+                    <tr>
+                        <td>Average Gas Price (last 24 h)</td>
+                        <td id="hist_fee" class="font-bold"></td>
+                    </tr>
+                    <tr>
+                        <td class="pr-4">Average Transaction/s (last 24 h)</td>
+                        <td id="hist_txs" class="font-bold"></td>
+                    </tr>
+                </table>
                 <div class="mb-12">
-                    <p class="font-extralight text-sm pb-4">Average Gas Price (Last 7 days, *10^6 aEvmos)</p>
+                    <p class="font-regular text-sm pb-4">Average Gas Price (Last 7 days, *10^6 aEvmos)</p>
                     <table class="w-full text-xs font-extralight table-fixed">
                     <tr>
                         <td class="text-right italic">UTC</td>
@@ -155,7 +169,7 @@
                     </table>
                 </div>
                 <div>
-                    <p class="font-extralight text-sm pb-4">Sum of Transactions (Last 24 hours)</p>
+                    <p class="font-regular text-sm pb-4">Transactions (Last 24 hours)</p>
                     <canvas id="chart_tx" class="w-full pb-4"></canvas>
                 </div>
             </div>
@@ -176,6 +190,7 @@
         var gas_medium_tx = document.getElementById("gasMedium_tx")
         var gas_slow = document.getElementById("gasSlow")
         var gas_slow_tx = document.getElementById("gasSlow_tx")
+        var sum_tx = document.getElementById('sum_tx')
 
 
         fetch('/blockstatus', {
@@ -200,6 +215,9 @@
                 gas_medium_tx.innerText = data.gas_avgFee[6] * 21000
                 gas_slow.innerText = data.gas_avgFee[20]
                 gas_slow_tx.innerText = data.gas_avgFee[20] * 21000
+                hist_tx.innerText = data.hist_sum_tx
+                hist_fee.innerText = Math.round(data.hist_avg_fee * 100) / 100 + ' aEvmos'
+                hist_txs.innerText = Math.round(data.hist_sum_tx / (24 * 60 * 60) * 10000) / 10000
             })
         })
     }

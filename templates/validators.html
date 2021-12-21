@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Evmosstation Validators</title>
+    <link rel="icon" href="../static/favicon.png" sizes="32x32" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../static/tailwind.css" rel="stylesheet">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://code.iconify.design/2/2.1.0/iconify.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-black to-blue-900 overscroll-none h-screen text-white overflow-scroll bg-fixed bg-black">
+    <div class="">
+        {% if warning is not none %}
+        <div class="py-2 flex flex-col sm:flex-row justify-center items-center bg-red-500 gap-1">
+            <p class="font-bold bg-red-400 px-4 py-1 rounded-full">Warning</p>
+            <p>{{ warning }}</p>
+        </div>
+        {% endif %}
+        <div id="header" x-data="{ mobileMenuOpen : false }" class="flex justify-between sticky top-0 z-50 bg-gradient-to-b from-black lg:from-transparent to-transparent w-full p-6">
+            <a href={{ url_for('index') }} id="logo">
+                <p class="font-bold text-4xl leading-none -mb-1">Evmos</p>
+                <p class="font-extralight text-xl leading-none pl-24">station</p>
+            </a>
+            <div id="menu" class="hidden sm:flex gap-8 font-medium pt-2 h-full">
+                <a class="cursor-pointer transform transition hover:scale-105" href={{ url_for('gas') }}>Monitoring</a>
+                <a class="cursor-pointer transform text-blue-500 transition hover:scale-105" href={{ url_for('validators') }}>Validators</a>
+            </div>
+            <button @click="mobileMenuOpen = !mobileMenuOpen" id="menu_burger" class="sm:hidden flex flex-col gap-8 font-medium h-full mt-2 p-1 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition hover:text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+            <div x-show="mobileMenuOpen" class="sm:hidden menur_burger_extended absolute right-6 top-16 text-right bg-black bg-opacity-25 p-4 -mr-2 rounded-xl" @click.outside="mobileMenuOpen = false">
+                <a class="cursor-pointer transform transition hover:scale-105 pb-2" href={{ url_for('gas') }}>Monitoring</a>
+                <a class="cursor-pointer transform text-blue-500 transition hover:scale-105" href={{ url_for('validators') }}>Validators</a>
+            </div>
+        </div>
+        <div id="content" class="m-auto max-w-screen-sm flex flex-col justify-center sm:pt-20 pt-8 p-6">
+        <div id="lastvalidator" class="mb-16">
+            <div id="validators" class="mb-20">
+                <p class="font-medium text-blue-500 pb-8">Validator List</p>
+                <div class="flex gap-2 text-xs font-extralight pb-8">
+                    {% if order_by == "moniker" and order == "asc" %}
+                        <a href={{ url_for('validators', page=page, order_by="moniker", order='desc') }} class="flex items-center">
+                            <span class="iconify w-4" data-icon="akar-icons:arrow-up"></span>
+                            <p>Name</p>
+                        </a>
+                    {% elif order_by == "moniker" and order == "desc" %}
+                        <a href={{ url_for('validators', page=page, order_by="moniker", order='asc') }} class="flex items-center">
+                            <span class="iconify w-4" data-icon="akar-icons:arrow-down"></span>
+                            <p>Name</p>
+                        </a>
+                    {% else %}
+                        <a href={{ url_for('validators', page=page, order_by="moniker", order='asc') }} class="flex items-center">
+                            <div class="w-4"></div>
+                            <p>Name</p>
+                        </a>
+                    {% endif %}
+                    {% if order_by == "power_share" and order == "asc" %}
+                        <a href={{ url_for('validators', page=page, order_by="power_share", order='desc') }} class="flex items-center">
+                            <span class="iconify w-4" data-icon="akar-icons:arrow-up"></span>
+                            <p>Voting Power</p>
+                        </a>
+                    {% elif order_by == "power_share" and order == "desc" %}
+                        <a href={{ url_for('validators', page=page, order_by="power_share", order='asc') }} class="flex items-center">
+                            <span class="iconify w-4" data-icon="akar-icons:arrow-down"></span>
+                            <p>Voting Power</p>
+                        </a>
+                    {% else %}
+                        <a href={{ url_for('validators', page=page, order_by="power_share", order='asc') }} class="flex items-center">
+                            <div class="w-4"></div>
+                            <p>Voting Power</p>
+                        </a>
+                    {% endif %}
+                    {% if order_by == "self_share" and order == "asc" %}
+                        <a href={{ url_for('validators', page=page, order_by="self_share", order='desc') }} class="flex items-center">
+                            <span class="iconify w-4" data-icon="akar-icons:arrow-up"></span>
+                            <p>Validator Share</p>
+                        </a>
+                    {% elif order_by == "self_share" and order == "desc" %}
+                        <a href={{ url_for('validators', page=page, order_by="self_share", order='asc') }} class="flex items-center">
+                            <span class="iconify w-4" data-icon="akar-icons:arrow-down"></span>
+                            <p>Validator Share</p>
+                        </a>
+                    {% else %}
+                        <a href={{ url_for('validators', page=page, order_by="self_share", order='asc') }} class="flex items-center">
+                            <div class="w-4"></div>
+                            <p>Validator Share</p>
+                        </a>
+                    {% endif %}
+                    {% if order_by == "comission_rate" and order == "asc" %}
+                        <a href={{ url_for('validators', page=page, order_by="comission_rate", order='desc') }} class="flex items-center">
+                            <span class="iconify w-4" data-icon="akar-icons:arrow-up"></span>
+                            <p>Comission Rate</p>
+                        </a>
+                    {% elif order_by == "comission_rate" and order == "desc" %}
+                        <a href={{ url_for('validators', page=page, order_by="comission_rate", order='asc') }} class="flex items-center">
+                            <span class="iconify w-4" data-icon="akar-icons:arrow-down"></span>
+                            <p>Comission Rate</p>
+                        </a>
+                    {% else %}
+                        <a href={{ url_for('validators', page=page, order_by="comission_rate", order='asc') }} class="flex items-center">
+                            <div class="w-4"></div>
+                            <p>Comission Rate</p>
+                        </a>
+                    {% endif %}
+                </div>
+                <div class="flex flex-col flex-row gap-12">
+                    {% for validator in validators %}
+                    <div class="z-0 transform transition sm:hover:scale-105 bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl p-4 -m-4">
+                         <div class="pb-4">
+                            <p class="">{{ validator.moniker }}</p>
+                            <p class="font-extralight text-xs break-words">{{ validator.address }}</p>
+                         </div>
+                        <div class="flex flex-col gap-1 sm:gap-0 sm:grid grid-cols-3 font-extralight text-xs w-full ">
+                            <td class="">
+                                <div class="flex items-center gap-1">
+                                    <svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10zM15 12h-1v8h-4v-8H6.081L12 4.601L17.919 12H15z" fill="currentColor"/></svg>
+                                    <p>Voting Power</p>
+                                    <p class="font-bold">{{ (validator.power_share * 100)|round(4) }}%</p>
+                                </div>
+                            </td>
+                            <td class="">
+                                <div class="flex items-center gap-1">
+                                    <span class="iconify" data-icon="ant-design:pie-chart-outlined"></span>
+                                    <p>Validator Share</p>
+                                    <p class="font-bold">{{ (validator.self_share * 100)|round(2) }}%</p>
+                                </div>
+                            </td>
+                            <td class="">
+                                <div class="flex items-center gap-1">
+                                    <span class="iconify" data-icon="akar-icons:share-box"></span>
+                                    <p>Comission Rate</p>
+                                    <p class="font-bold">{{ (validator.comission_rate * 100)|round(2) }}%</p>
+                                </div>
+                            </td>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="flex items-center justify-end">
+                        {% if page > 1 %}
+                            <a href={{ url_for('validators', page=page - 1, order_by=order_by, oder=order) }}>
+                                <span class="iconify" data-icon="akar-icons:chevron-left"></span>
+                            </a>
+                        {% endif %}
+                        <p>{{ page }} of {{ pagenumber }}</p>
+                        {% if page < pagenumber %}
+                            <a href={{ url_for('validators', page=page + 1, order_by=order_by, order=order) }}>
+                                <span class="iconify" data-icon="akar-icons:chevron-right"></span>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
