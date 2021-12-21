@@ -224,6 +224,8 @@
     document.addEventListener('DOMContentLoaded',callBlock)
     setInterval(callBlock, 4000);
 
+    Chart.defaults.font.size = 12;
+    Chart.defaults.font.weight = 400;
     const ctx2 = document.getElementById('chart_tx').getContext('2d');
     let chart2 = new Chart(ctx2, {
       type: 'line',
@@ -251,6 +253,11 @@
                   },
                   title: {
                       display: true,
+                      font: {
+                          size: 12,
+                          weight: 300,
+                          style: 'normal'
+                      },
                       text: '10min Interval',
                       color: 'rgb(255, 255, 255)'
                   },
@@ -266,6 +273,11 @@
                   },
                   title: {
                       display: true,
+                      font: {
+                          size: 12,
+                          weight: 300,
+                          style: 'normal'
+                      },
                       text: 'Transaction Count',
                       color: 'rgb(255, 255, 255)'
                   },
