@@ -53,8 +53,22 @@
                             </div>
                         <div class="font-extralight text-xs pb-4">
                             <div>
+                                <p class="inline">Website: </p>
+                                {% if validator.website == "" %}
+                                -
+                                {% endif %}
+                                <a class="underline" href={{ validator.website }}>{{ validator.website }}</a>
+                            </div>
+                            <div class="pb-4">
+                                <p class="inline">Details: </p>
+                                {% if validator.details == "" %}
+                                -
+                                {% endif %}
+                                <p class="inline">{{ validator.details }}</p>
+                            </div>
+                            <div>
                                 <p class="inline">Tokens: </p>
-                                <p class="inline">{{ validator.tokens }} aEvmos</p>
+                                <p class="inline font-bold">{{ validator.tokens }} aEvmos</p>
                             </div>
                             <div class="pb-4">
                                 <p class="inline">Bond Status: </p>
@@ -67,20 +81,6 @@
                                     Unbonding
                                     {% endif %}
                                 </p>
-                            </div>
-                            <div>
-                                <p class="inline">Website: </p>
-                                {% if validator.website == "" %}
-                                -
-                                {% endif %}
-                                <a href={{ validator.website }}>{{ validator.website }}</a>
-                            </div>
-                            <div>
-                                <p class="inline">Details: </p>
-                                {% if validator.details == "" %}
-                                -
-                                {% endif %}
-                                <p class="inline">{{ validator.details }}</p>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 font-extralight text-xs w-full ">
