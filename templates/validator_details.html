@@ -46,7 +46,7 @@
                     <div class="bg-gradient-to-bl {% if validator.jailed %} from-red-900 to-red-500 {% else %} from-indigo-900 to-purple-800 {% endif %} rounded-3xl p-4 -m-4">
                         <div class="pb-4">
                             <div class="flex justify-between items-center">
-                                <p class="inline text-xl">{{ validator.moniker }}</p>
+                                <p class="inline text-lg">{{ validator.moniker }}</p>
                                 {% if validator.jailed %} <p class="inline border-2 rounded-md text-xs p-2">Jailed</p> {% endif %}
                                 </div>
                                 <p class="font-extralight text-sm italic pr-12 sm:pr-0 break-words">{{ validator.address }}</p>
