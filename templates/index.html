@@ -3,181 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <title>Evmosstation Monitoring</title>
-    <link rel="icon" href="../static/favicon.png" sizes="32x32" />
+    <link rel="icon" href="../static/favicon.png" sizes="32x32"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="../static/tailwind.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.2/chart.min.js" integrity="sha512-tMabqarPtykgDtdtSqCL3uLVM0gS1ZkUAVhRFu1vSEFgvB73niFQWJuvviDyBGBH22Lcau4rHB5p2K2T0Xvr6Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.2/chart.min.js"
+            integrity="sha512-tMabqarPtykgDtdtSqCL3uLVM0gS1ZkUAVhRFu1vSEFgvB73niFQWJuvviDyBGBH22Lcau4rHB5p2K2T0Xvr6Q=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-gradient-to-br from-black to-blue-900 h-screen text-white bg-fixed bg-black">
-    <div class="">
-        {% if warning is not none %}
-        <div class="py-2 flex flex-col sm:flex-row justify-center items-center bg-red-500 gap-1">
+<body class="{% if warning is not none %}animate-fade_in_20 sm:animate-fade_in_12{% endif %} bg-gradient-to-br from-black to-blue-900 h-screen text-white bg-fixed bg-black">
+<div class="">
+    {% if warning is not none %}
+        <div class="h-20 sm:h-12 py-2 flex flex-col sm:flex-row justify-center items-center bg-red-500 gap-1">
             <p class="font-bold bg-red-400 px-4 py-1 rounded-full">Warning</p>
             <p>{{ warning }}</p>
         </div>
-        {% endif %}
-        <div id="header" x-data="{ mobileMenuOpen : false }" class="flex justify-between sticky top-0 z-50 bg-gradient-to-b from-black lg:from-transparent to-transparent w-full p-6">
-            <a href={{ url_for('index') }} id="logo">
-                <p class="font-bold text-4xl leading-none -mb-1">Evmos</p>
-                <p class="font-extralight text-xl leading-none pl-24">station</p>
-            </a>
-            <div id="menu" class="hidden sm:flex gap-8 font-medium pt-2 h-full">
-                <a class="cursor-pointer transform text-blue-500 transition hover:scale-105" href={{ url_for('gas') }}>Monitoring</a>
-                <a class="cursor-pointer transform transition hover:scale-105" href={{ url_for('validators') }}>Validators</a>
-            </div>
-            <button @click="mobileMenuOpen = !mobileMenuOpen" id="menu_burger" class="sm:hidden flex flex-col gap-8 font-medium h-full mt-2 p-1 focus:outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition hover:text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            </button>
-            <div x-show="mobileMenuOpen" class="flex flex-col sm:hidden menur_burger_extended absolute right-6 top-16 text-right bg-black bg-opacity-25 p-4 -mr-2 rounded-xl" @click.outside="mobileMenuOpen = false">
-                <a class="cursor-pointer transform text-blue-500 transition hover:scale-105 pb-2" href={{ url_for('gas') }}>Monitoring</a>
-                <a class="cursor-pointer transform transition hover:scale-105" href={{ url_for('validators') }}>Validators</a>
-            </div>
+    {% endif %}
+    <div id="header" x-data="{ mobileMenuOpen : false }"
+         class="flex justify-between sticky top-0 z-50 bg-gradient-to-b from-black lg:from-transparent to-transparent w-full p-6">
+        <a href={{ url_for('index') }} id="logo">
+            <p class="font-bold text-4xl leading-none -mb-1">Evmos</p>
+            <p class="font-extralight text-xl leading-none pl-24">station</p>
+        </a>
+        <div id="menu" class="hidden sm:flex gap-8 font-medium pt-2 h-full">
+            <a class="cursor-pointer transform text-blue-500 transition hover:scale-105" href={{ url_for('gas') }}>Monitoring</a>
+            <a class="cursor-pointer transform transition hover:scale-105"
+               href={{ url_for('validators') }}>Validators</a>
         </div>
-        <div id="content" class="m-auto max-w-screen-sm flex flex-col justify-center sm:pt-20 pt-8 p-6">
-            <div id="lastblock" class="mb-16">
-                <p class="font-medium text-blue-500 pb-3">Last Block</p>
-                <div class="flex flex-col-reverse sm:flex-row justify-between">
-                    <table class="font-extralight text-sm">
-                        <tr>
-                            <td class="w-32">EVM Transactions</td>
-                            <td id="block_transaction" class="font-bold"></td>
-                        </tr>
-                        <tr>
-                            <td>Gas Used</td>
-                            <td id="block_usage" class="font-bold"></td>
-                        </tr>
-                        <tr>
-                            <td>Base Gas Price</td>
-                            <td id="block_basefee" class="font-bold"></td>
-                        </tr>
-                        <tr>
-                            <td>Size</td>
-                            <td id="block_size" class="font-bold"></td>
-                        </tr>
-                    </table>
-                    <div class="text-right pb-4 sm:pb-0">
-                        <p id="block_number" class="font-bold text-xl text-"></p>
-                        <p id="block_timestamp" class="font-extralight text-sm"></p>
-                    </div>
-                </div>
-            </div>
-            <div id="gasfee" class="mb-20">
-                <p class="font-medium text-blue-500 pb-8">Gas Price</p>
-                <div class="flex flex-col sm:flex-row gap-12">
-                    <div id="fastgas" class="z-0 transform transition sm:hover:scale-105 sm:w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
-                        <div class="flex justify-between mb-6">
-                            <div>
-                                <p class="">Fast</p>
-                                <p class="font-extralight text-xs">< 9 Seconds</p>
-                            </div>
-                            <img src="../static/002-rocket.png" class="w-7 h-full">
-                        </div>
-                        <div class="text-xl mb-6">
-                            <p id="gasFast" class="inline font-bold"></p>
-                            <p class="inline font-extralight">aEvmos</p>
-                        </div>
-                        <div class="font-extralight text-xs">
-                            <p class="inline">Transaction price</p>
-                            <p id="gasFast_tx" class="inline"></p>
-                            <p class="inline">aE</p>
-                        </div>
-                    </div>
-                    <div id="mediumgas" class="transform transition sm:hover:scale-105 sm:w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
-                        <div class="flex justify-between mb-6">
-                            <div>
-                                <p class="">Medium</p>
-                                <p class="font-extralight text-xs">< 54 Seconds</p>
-                            </div>
-                            <img src="../static/003-sport-car.png" class="w-7 h-full">
-                        </div>
-                        <div class="text-xl mb-6">
-                            <p id="gasMedium" class="inline font-bold"></p>
-                            <p class="inline font-extralight">aEvmos</p>
-                        </div>
-                        <div class="font-extralight text-xs">
-                            <p class="inline">Transaction price</p>
-                            <p id="gasMedium_tx" class="inline"></p>
-                            <p class="inline">aE</p>
-                        </div>
-                    </div>
-                    <div id="slowgas" class="transform transition sm:hover:scale-105 sm:w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
-                        <div class="flex justify-between mb-6">
-                            <div>
-                                <p class="">Slow</p>
-                                <p class="font-extralight text-xs">< 180 Seconds</p>
-                            </div>
-                            <img src="../static/001-snail.png" class="w-7 h-full">
-                        </div>
-                        <div class="text-xl mb-6">
-                            <p id="gasSlow" class="inline font-bold"></p>
-                            <p class="inline font-extralight">aEvmos</p>
-                        </div>
-                        <div class="font-extralight text-xs">
-                            <p class="inline">Transaction price</p>
-                            <p id="gasSlow_tx" class="inline"></p>
-                            <p class="inline">aE</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="History" class="mb-12">
-                <p class="font-medium text-blue-500 pb-3">History</p>
-                <table class="font-extralight text-sm mb-12">
+        <button @click="mobileMenuOpen = !mobileMenuOpen" id="menu_burger"
+                class="sm:hidden flex flex-col gap-8 font-medium h-full mt-2 p-1 focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition hover:text-blue-500" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+        </button>
+        <div x-show="mobileMenuOpen"
+             class="flex flex-col sm:hidden menur_burger_extended absolute right-6 top-16 text-right bg-black bg-opacity-25 p-4 -mr-2 rounded-xl"
+             @click.outside="mobileMenuOpen = false">
+            <a class="cursor-pointer transform text-blue-500 transition hover:scale-105 pb-2" href={{ url_for('gas') }}>Monitoring</a>
+            <a class="cursor-pointer transform transition hover:scale-105"
+               href={{ url_for('validators') }}>Validators</a>
+        </div>
+    </div>
+    <div id="content" class="m-auto max-w-screen-sm flex flex-col justify-center sm:pt-20 pt-8 p-6">
+        <div id="lastblock" class="mb-16">
+            <p class="font-medium text-blue-500 pb-3">Last Block</p>
+            <div class="flex flex-col-reverse sm:flex-row justify-between">
+                <table class="font-extralight text-sm">
                     <tr>
-                        <td>Transactions, past 24h</td>
-                        <td id="hist_tx" class="font-bold pl-2"></td>
+                        <td class="w-32">EVM Transactions</td>
+                        <td id="block_transaction" class="font-bold"></td>
                     </tr>
                     <tr>
-                        <td>Avg. Gas Price, past 24h</td>
-                        <td id="hist_fee" class="font-bold pl-2"></td>
+                        <td>Gas Used</td>
+                        <td id="block_usage" class="font-bold"></td>
                     </tr>
                     <tr>
-                        <td>Avg tx/s, past 24h</td>
-                        <td id="hist_txs" class="font-bold pl-2"></td>
+                        <td>Base Gas Price</td>
+                        <td id="block_basefee" class="font-bold"></td>
+                    </tr>
+                    <tr>
+                        <td>Size</td>
+                        <td id="block_size" class="font-bold"></td>
                     </tr>
                 </table>
-                <div class="mb-12">
-                    <p class="font-regular text-sm pb-4">Average Gas Price (Last 7 days, *10^6 aEvmos)</p>
-                    <table class="w-full text-xs font-extralight table-fixed">
+                <div class="text-right pb-4 sm:pb-0">
+                    <p id="block_number" class="font-bold text-xl text-"></p>
+                    <p id="block_timestamp" class="font-extralight text-sm"></p>
+                </div>
+            </div>
+        </div>
+        <div id="gasfee" class="mb-20">
+            <p class="font-medium text-blue-500 pb-8">Gas Price</p>
+            <div class="flex flex-col sm:flex-row gap-12">
+                <div id="fastgas"
+                     class="z-0 transform transition sm:hover:scale-105 sm:w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
+                    <div class="flex justify-between mb-6">
+                        <div>
+                            <p class="">Fast</p>
+                            <p class="font-extralight text-xs">< 9 Seconds</p>
+                        </div>
+                        <img src="../static/002-rocket.png" class="w-7 h-full">
+                    </div>
+                    <div class="text-xl mb-6">
+                        <p id="gasFast" class="inline font-bold"></p>
+                        <p class="inline font-extralight">aEvmos</p>
+                    </div>
+                    <div class="font-extralight text-xs">
+                        <p class="inline">Transaction price</p>
+                        <p id="gasFast_tx" class="inline"></p>
+                        <p class="inline">aE</p>
+                    </div>
+                </div>
+                <div id="mediumgas"
+                     class="transform transition sm:hover:scale-105 sm:w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
+                    <div class="flex justify-between mb-6">
+                        <div>
+                            <p class="">Medium</p>
+                            <p class="font-extralight text-xs">< 54 Seconds</p>
+                        </div>
+                        <img src="../static/003-sport-car.png" class="w-7 h-full">
+                    </div>
+                    <div class="text-xl mb-6">
+                        <p id="gasMedium" class="inline font-bold"></p>
+                        <p class="inline font-extralight">aEvmos</p>
+                    </div>
+                    <div class="font-extralight text-xs">
+                        <p class="inline">Transaction price</p>
+                        <p id="gasMedium_tx" class="inline"></p>
+                        <p class="inline">aE</p>
+                    </div>
+                </div>
+                <div id="slowgas"
+                     class="transform transition sm:hover:scale-105 sm:w-full bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl -m-4 p-4">
+                    <div class="flex justify-between mb-6">
+                        <div>
+                            <p class="">Slow</p>
+                            <p class="font-extralight text-xs">< 180 Seconds</p>
+                        </div>
+                        <img src="../static/001-snail.png" class="w-7 h-full">
+                    </div>
+                    <div class="text-xl mb-6">
+                        <p id="gasSlow" class="inline font-bold"></p>
+                        <p class="inline font-extralight">aEvmos</p>
+                    </div>
+                    <div class="font-extralight text-xs">
+                        <p class="inline">Transaction price</p>
+                        <p id="gasSlow_tx" class="inline"></p>
+                        <p class="inline">aE</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="History" class="mb-12">
+            <p class="font-medium text-blue-500 pb-3">History</p>
+            <table class="font-extralight text-sm mb-12">
+                <tr>
+                    <td>Transactions, past 24h</td>
+                    <td id="hist_tx" class="font-bold pl-2"></td>
+                </tr>
+                <tr>
+                    <td>Avg. Gas Price, past 24h</td>
+                    <td id="hist_fee" class="font-bold pl-2"></td>
+                </tr>
+                <tr>
+                    <td>Avg tx/s, past 24h</td>
+                    <td id="hist_txs" class="font-bold pl-2"></td>
+                </tr>
+            </table>
+            <div class="mb-12">
+                <p class="font-regular text-sm pb-4">Average Gas Price (Last 7 days, *10^6 aEvmos)</p>
+                <table class="w-full text-xs font-extralight table-fixed">
                     <tr>
                         <td class="text-right italic">UTC</td>
                     </tr>
                     {% for hour in hours %}
-                    <tr>
-                        <td class="text-right">{{ hour }}</td>
-                        {% for day in days %}
-                            <td class="text-center {% if matrix[hour][day]['currentdatetime']==1 %}border-2{% endif %} {% if matrix[hour][day]['color']!=0 %}bg-blue-{{ matrix[hour][day]['color']  }}{% endif %}">{{ matrix[hour][day]['value']  }}</td>
-                        {% endfor %}
-                    </tr>
+                        <tr>
+                            <td class="text-right">{{ hour }}</td>
+                            {% for day in days %}
+                                <td class="text-center {% if matrix[hour][day]['color']!=0 %}bg-blue-{{ matrix[hour][day]['color'] }}{% endif %}">{{ matrix[hour][day]['value'] }}</td>
+                            {% endfor %}
+                        </tr>
                     {% endfor %}
                     <tr class="sm:hidden">
                         <td class="text-center"></td>
                         {% for day in days %}
-                        <td class="text-center">{{ day[:3] }}</td>
+                            <td class="text-center">{{ day[:3] }}</td>
                         {% endfor %}
                     </tr>
                     <tr class="hidden sm:table-row">
                         <td class="text-center"></td>
                         {% for day in days %}
-                        <td class="text-center">{{ day }}</td>
+                            <td class="text-center">{{ day }}</td>
                         {% endfor %}
                     </tr>
-                    </table>
-                </div>
-                <div>
-                    <p class="font-regular text-sm pb-4">Transactions (Last 24 hours)</p>
-                    <canvas id="chart_tx" class="w-full pb-4"></canvas>
-                </div>
+                </table>
+            </div>
+            <div>
+                <p class="font-regular text-sm pb-4">Transactions (Last 24 hours)</p>
+                <canvas id="chart_tx" class="w-full pb-4"></canvas>
             </div>
         </div>
     </div>
 </div>
+</div>
 <script>
-    function  callBlock() {
+    function callBlock() {
         var block_number = document.getElementById("block_number");
         var block_basefee = document.getElementById("block_basefee");
         var block_size = document.getElementById("block_size");
@@ -200,92 +212,93 @@
                 "content-type": "application/json"
             })
         })
-        .then(function (response) {
-            response.json().then(function (data) {
-                console.log(response)
-                block_number.innerText = data.number.toLocaleString('de-DE')
-                block_basefee.innerText = data.baseFeePerGas + ' aEvmos'
-                block_size.innerText = data.size/1000 + ' kB'
-                block_usage.innerText = ((data.gasUsed / data.gasLimit)*100).toFixed(2) + ' %'
-                block_transaction.innerText = data.transactionCount
-                block_timestamp.innerText = data.timestamp_str
-                gas_fast.innerText = data.gas_avgFee[1]
-                gas_fast_tx.innerText = data.gas_avgFee[1] * 21000
-                gas_medium.innerText = data.gas_avgFee[6]
-                gas_medium_tx.innerText = data.gas_avgFee[6] * 21000
-                gas_slow.innerText = data.gas_avgFee[20]
-                gas_slow_tx.innerText = data.gas_avgFee[20] * 21000
-                hist_tx.innerText = data.hist_sum_tx
-                hist_fee.innerText = Math.round(data.hist_avg_fee) + ' aE'
-                hist_txs.innerText = Math.round(data.hist_sum_tx / (24 * 60 * 60) * 10000) / 10000
+            .then(function (response) {
+                response.json().then(function (data) {
+                    console.log(response)
+                    block_number.innerText = data.number.toLocaleString('de-DE')
+                    block_basefee.innerText = data.baseFeePerGas + ' aEvmos'
+                    block_size.innerText = data.size / 1000 + ' kB'
+                    block_usage.innerText = ((data.gasUsed / data.gasLimit) * 100).toFixed(2) + ' %'
+                    block_transaction.innerText = data.transactionCount
+                    block_timestamp.innerText = data.timestamp_str
+                    gas_fast.innerText = data.gas_avgFee[1]
+                    gas_fast_tx.innerText = data.gas_avgFee[1] * 21000
+                    gas_medium.innerText = data.gas_avgFee[6]
+                    gas_medium_tx.innerText = data.gas_avgFee[6] * 21000
+                    gas_slow.innerText = data.gas_avgFee[20]
+                    gas_slow_tx.innerText = data.gas_avgFee[20] * 21000
+                    hist_tx.innerText = data.hist_sum_tx
+                    hist_fee.innerText = Math.round(data.hist_avg_fee) + ' aE'
+                    hist_txs.innerText = Math.round(data.hist_sum_tx / (24 * 60 * 60) * 10000) / 10000
+                })
             })
-        })
     }
-    document.addEventListener('DOMContentLoaded',callBlock)
+
+    document.addEventListener('DOMContentLoaded', callBlock)
     setInterval(callBlock, 4000);
 
     Chart.defaults.font.size = 13;
     Chart.defaults.font.weight = 300;
     const ctx2 = document.getElementById('chart_tx').getContext('2d');
     let chart2 = new Chart(ctx2, {
-      type: 'line',
-      data: {
-          labels: {{ time }},
-        datasets: [{
-            data: {{ tx_data }},
-            borderColor: 'rgb(255, 255, 255)',
-            borderWidth: 1,
-            pointRadius: 1,
-            pointHoverRadius: 4,
-            tension: 0.3
-        }]
-      },
+        type: 'line',
+        data: {
+            labels: {{ time }},
+            datasets: [{
+                data: {{ tx_data }},
+                borderColor: 'rgb(255, 255, 255)',
+                borderWidth: 1,
+                pointRadius: 1,
+                pointHoverRadius: 4,
+                tension: 0.3
+            }]
+        },
         options: {
-          plugins: {
-              legend: {
-                  display: false
-              }
-          },
-          scales: {
-              x: {
-                  ticks: {
-                      color: 'rgb(255, 255, 255)'
-                  },
-                  title: {
-                      display: true,
-                      font: {
-                          size: 12,
-                          weight: 300,
-                          style: 'normal'
-                      },
-                      text: '10min Interval',
-                      color: 'rgb(255, 255, 255)'
-                  },
-                  type: 'time',
-                  grid: {
-                      display: false
-                  }
-              },
-              y: {
-                  ticks: {
-                      precision: 0,
-                      color: 'rgb(255, 255, 255)'
-                  },
-                  title: {
-                      display: true,
-                      font: {
-                          size: 12,
-                          weight: 300,
-                          style: 'normal'
-                      },
-                      text: 'Transaction Count',
-                      color: 'rgb(255, 255, 255)'
-                  },
-                  grid: {
-                      display: false
-                  }
-              }
-          }
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: 'rgb(255, 255, 255)'
+                    },
+                    title: {
+                        display: true,
+                        font: {
+                            size: 12,
+                            weight: 300,
+                            style: 'normal'
+                        },
+                        text: '10min Interval',
+                        color: 'rgb(255, 255, 255)'
+                    },
+                    type: 'time',
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    ticks: {
+                        precision: 0,
+                        color: 'rgb(255, 255, 255)'
+                    },
+                    title: {
+                        display: true,
+                        font: {
+                            size: 12,
+                            weight: 300,
+                            style: 'normal'
+                        },
+                        text: 'Transaction Count',
+                        color: 'rgb(255, 255, 255)'
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            }
         }
     });
 

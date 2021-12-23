@@ -11,7 +11,7 @@ from evmos_util import *
 from model import *
 
 # Variable
-SYNC_NUMBER = 7 * 24 * 60 * 10  #one Week
+SYNC_NUMBER = 10000 #7 * 24 * 60 * 10  # one Week
 
 # Init App and Database Databsase
 app = Flask(__name__)
@@ -188,11 +188,9 @@ def price_matrix():
             data[hour][day] = {}
             data[hour][day]["value"] = ""
             data[hour][day]["color"] = 0
-
     max_avgGasPrice = max(
         [block.sumGasPrice / block.sumTransactions for block in blocks if block.sumGasPrice is not None],
         default=0) / 1000000
-
     # Fill DF
     for block in blocks:
         if block.sumGasPrice is None:
@@ -207,15 +205,6 @@ def price_matrix():
         data[current_hour][current_day]["value"] = value
         data[current_hour][current_day]["color"] = color
         today = datetime.datetime.today()
-        if (
-                current_hour == (datetime.datetime.now() - datetime.timedelta(minutes=10)).strftime("%H:00")
-                and
-                current_day == calendar.day_name[datetime.datetime.today().weekday()]
-        ):
-            data[current_hour][current_day]["currentdatetime"] = 1
-        else:
-            data[current_hour][current_day]["currentdatetime"] = 0
-
     return data, days, hours
 
 
@@ -291,7 +280,8 @@ def validators():
     maxPower = db.session.query(func.sum(Validator.tokens).label("sum_tokens")).first()
     return render_template(
         "validators.html",
-        validators=Validator.query.order_by(text(order_by + " " + order), 'moniker').offset(25 * (page - 1)).limit(25).all(),
+        validators=Validator.query.order_by(text(order_by + " " + order), 'moniker').offset(25 * (page - 1)).limit(
+            25).all(),
         pagenumber=pagenumber,
         page=page,
         order_by=order_by,
