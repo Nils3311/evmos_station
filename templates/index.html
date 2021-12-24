@@ -28,8 +28,8 @@
         </a>
         <div id="menu" class="hidden sm:flex gap-8 font-medium pt-2 h-full">
             <a class="cursor-pointer transform text-blue-500 transition hover:scale-105" href={{ url_for('gas') }}>Monitoring</a>
-            <a class="cursor-pointer transform transition hover:scale-105"
-               href={{ url_for('validators') }}>Validators</a>
+            <a class="cursor-pointer transform transition hover:scale-105" href={{ url_for('validators') }}>Validators</a>
+            <a class="cursor-pointer transform transition hover:scale-105" href={{ url_for('faucet') }}>Faucet</a>
         </div>
         <button @click="mobileMenuOpen = !mobileMenuOpen" id="menu_burger"
                 class="sm:hidden flex flex-col gap-8 font-medium h-full mt-2 p-1 focus:outline-none">
@@ -42,8 +42,8 @@
              class="flex flex-col sm:hidden menur_burger_extended absolute right-6 top-16 text-right bg-black bg-opacity-25 p-4 -mr-2 rounded-xl"
              @click.outside="mobileMenuOpen = false">
             <a class="cursor-pointer transform text-blue-500 transition hover:scale-105 pb-2" href={{ url_for('gas') }}>Monitoring</a>
-            <a class="cursor-pointer transform transition hover:scale-105"
-               href={{ url_for('validators') }}>Validators</a>
+            <a class="cursor-pointer transform transition hover:scale-105" href={{ url_for('validators') }}>Validators</a>
+            <a class="cursor-pointer transform transition hover:scale-105" href={{ url_for('faucet') }}>Faucet</a>
         </div>
     </div>
     <div id="content" class="m-auto max-w-screen-sm flex flex-col justify-center sm:pt-20 pt-8 p-6">

@@ -31,6 +31,12 @@ scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
 
+#owner = '0x2B3EA71489855C524E193cFA7E95F2F2825CE2A8'
+#destination = '0xe5C31c39Fd8387Cabf2Fe582C3C0d6d1dCF6fc72'
+private_key = os.getenv('private_key')
+#transaction = transfer_ERC20('0x874911b1DdF66147376F449dcCD1049FF67DB329', owner, private_key, , 1000000000000000000)
+
+
 
 def db_lastblock():
     db_block = db.session.query(Block).order_by(Block.number.desc()).first()
@@ -303,11 +309,15 @@ def validator_details(address):
     )
 
 
-@app.route('/')
-def index():
-    return redirect(url_for('gas'))
+@app.route('/faucet')
+def faucet():
+    return render_template(
+        "faucet.html",
+        warning=None
+    )
 
-
+# TODO Tailwind Deploy Automation
+# TODO Block Time berechnen um nicht 9 Sekunden pro Block statisch auszugeben
 # TODO Vorbefüllen mit aktuellen Werten damit es beim Laden nicht ploppt
 # TODO Hinweis wenn der RPC nicht reagiert
 # TODO Warning Animation zum Ausfahren von oben geben
@@ -336,8 +346,6 @@ def gas():
     )
 
 
-# TODO Tailwind Deploy Automation
-# TODO Block Time berechnen um nicht 9 Sekunden pro Block statisch auszugeben
 @app.route('/blockstatus', methods=['POST', 'GET'])
 def block_status():
     data = db_lastblock()
@@ -366,6 +374,11 @@ def block_status():
     # except:
     # data = []
     return jsonify(data)
+
+
+@app.route('/')
+def index():
+    return redirect(url_for('gas'))
 
 
 if __name__ == '__main__':

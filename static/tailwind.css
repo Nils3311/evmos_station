@@ -203,8 +203,7 @@ Correct the inability to style clickable types in iOS and Safari.
 */
 
 button,
-[type='button'],
-[type='submit'] {
+[type='button'] {
   -webkit-appearance: button;
 }
 
@@ -1164,10 +1163,6 @@ video {
   background-size: contain;
 }
 
-.rounded {
-  border-radius: 0.25rem;
-}
-
 .rounded-md {
   border-radius: 0.375rem;
 }
@@ -1256,6 +1251,10 @@ video {
   height: 1.5rem;
 }
 
+.h-20 {
+  height: 5rem;
+}
+
 .h-full {
   height: 100%;
 }
@@ -1282,6 +1281,11 @@ video {
 .text-xl {
   font-size: 1.25rem;
   line-height: 1.75rem;
+}
+
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
 }
 
 .text-4xl {
@@ -1369,11 +1373,6 @@ video {
   padding-right: 1rem;
 }
 
-.px-6 {
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-}
-
 .pt-2 {
   padding-top: 0.5rem;
 }
@@ -1400,10 +1399,6 @@ video {
 
 .pb-8 {
   padding-bottom: 2rem;
-}
-
-.pl-8 {
-  padding-left: 2rem;
 }
 
 .pr-12 {
@@ -1502,10 +1497,6 @@ video {
   width: 8rem;
 }
 
-.w-96 {
-  width: 24rem;
-}
-
 .w-full {
   width: 100%;
 }
@@ -1524,10 +1515,6 @@ video {
 
 .gap-2 {
   gap: 0.5rem;
-}
-
-.gap-3 {
-  gap: 0.75rem;
 }
 
 .gap-8 {
@@ -1636,6 +1623,51 @@ video {
   }
 }
 
+@-webkit-keyframes fade_in_12 {
+  0%, 50% {
+    transform: translateY(-3rem);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade_in_12 {
+  0%, 50% {
+    transform: translateY(-3rem);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@-webkit-keyframes fade_in_20 {
+  0%, 50% {
+    transform: translateY(-5rem);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade_in_20 {
+  0%, 50% {
+    transform: translateY(-5rem);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.animate-fade_in_20 {
+  -webkit-animation: fade_in_20 2s ease-out;
+          animation: fade_in_20 2s ease-out;
+}
+
 .bg-blend-normal {
   background-blend-mode: normal;
 }
@@ -1717,6 +1749,10 @@ video {
     flex-direction: row;
   }
 
+  .sm\:h-12 {
+    height: 3rem;
+  }
+
   .sm\:pr-0 {
     padding-right: 0px;
   }
@@ -1744,6 +1780,11 @@ video {
   .sm\:hover\:scale-105:hover {
     --tw-scale-x: 1.05;
     --tw-scale-y: 1.05;
+  }
+
+  .sm\:animate-fade_in_12 {
+    -webkit-animation: fade_in_12 2s ease-out;
+            animation: fade_in_12 2s ease-out;
   }
 }
 

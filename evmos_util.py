@@ -1,9 +1,18 @@
 import requests
 import json
+from web3 import Web3
+
+# TODO checken ob das auch benötigt wird??
+# WEB3_ENDPOINT="https://evmos-testnet.gateway.pokt.network/v1/lb/61afa495a6f4fb0039968571"
+WEB3_ENDPOINT = 'https://evmos-evm-rpc.tk/'
+w3 = Web3(Web3.HTTPProvider(WEB3_ENDPOINT))
 
 #rpc = 'https://evmos-testnet.gateway.pokt.network/v1/lb/61ac07b995d548003aedf5ee'
-rpc = 'https://ethereum.rpc.evmos.dev/'
-#rpc = 'https://evmos-evm-rpc.tk/'
+# rpc = 'https://ethereum.rpc.evmos.dev/' #nö
+#rpc = 'https://evmos-evm-rpc.tk:443/'
+#rpc = 'https://evmos-rpc.mercury-nodes.net:443/'
+rpc = 'https://evmos-eth.mercury-nodes.net/'
+#rpc = 'https://evmos-evm-rpc.tk:443/'
 #rpc = 'https://evmos-rpc.mercury-nodes.net/'
 
 #TODO How to handle if RPC is not anawering
@@ -39,4 +48,36 @@ def eth_getblock_data(blockheight='latest'):
     return requests.post(rpc, json=payload).json()['result']
 
 
+# Schnittstelle zum Vertrag
+def create_abi(contract_address: str, contract='/erc20.json'):
+    w3 = Web3(Web3.HTTPProvider(WEB3_ENDPOINT))
+    with open("erc20/erc20.json") as f:
+        abi = json.load(f)
+    contract = w3.eth.contract(
+        address=Web3.toChecksumAddress(contract_address), abi=abi)
+    return contract
+
+
+def transfer_ERC20(
+    contract_address: str,
+    private_key: str,
+    dest: str,
+    amount: int,
+    owner: str,
+    nonce: int,
+    gas: int = 2100000000000,
+    gasPrice: int = 27,
+) -> str:
+    if nonce is None: w3.eth.get_transaction_count(owner)
+    contract = create_abi(contract_address)
+    contract_tx = contract.functions.transfer(
+        Web3.toChecksumAddress(dest), amount).buildTransaction({
+            'from': Web3.toChecksumAddress(owner),
+            'gas': gas,
+            'gasPrice': gasPrice,
+            'nonce': nonce
+        })
+    signed_tx = w3.eth.account.sign_transaction(contract_tx, private_key)
+    txn_hash = w3.eth.send_raw_transaction(signed_tx.rawTransaction)
+    return w3.toHex(txn_hash)
 
