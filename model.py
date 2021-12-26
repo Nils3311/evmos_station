@@ -144,3 +144,13 @@ def validator_loader(v: dict) -> Validator:
         jailed=v['jailed'],
         status=v['status']
     )
+
+
+class Faucet(db.Model):
+    number = db.Column(db.BIGINT, primary_key=True)
+    timestamp = db.Column(db.BIGINT)
+    address = db.Column(db.String(100))
+
+    def __init__(self, timestamp, address):
+        self.timestamp = timestamp
+        self.address = address

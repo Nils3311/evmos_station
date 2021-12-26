@@ -1,3 +1,4 @@
+import bdb
 import calendar
 import datetime
 import math
@@ -11,7 +12,7 @@ from evmos_util import *
 from model import *
 
 # Variable
-SYNC_NUMBER = 7 * 24 * 60 * 9  # one Week
+SYNC_NUMBER = 1000  # 7 * 24 * 60 * 9  # one Week
 
 # Init App and Database Databsase
 app = Flask(__name__)
@@ -31,11 +32,7 @@ scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
 
-#owner = '0x2B3EA71489855C524E193cFA7E95F2F2825CE2A8'
-#destination = '0xe5C31c39Fd8387Cabf2Fe582C3C0d6d1dCF6fc72'
 private_key = os.getenv('private_key')
-#transaction = transfer_ERC20('0x874911b1DdF66147376F449dcCD1049FF67DB329', owner, private_key, , 1000000000000000000)
-
 
 
 def db_lastblock():
@@ -309,12 +306,56 @@ def validator_details(address):
     )
 
 
-@app.route('/faucet')
+@app.route('/faucet', methods=['GET', 'POST'])
 def faucet():
-    return render_template(
-        "faucet.html",
-        warning=None
-    )
+    if request.method == 'GET':
+        return render_template(
+            "faucet.html",
+            message=None,
+            tx_code=None,
+            warning=None
+        )
+    elif request.method == 'POST':
+        address = request.form['address']
+        # TODO in DB eintragen, so dass nur 1 pro Stunde
+        if w3.isAddress(address):
+            usedAddress = db.session.query(Faucet).filter(Faucet.address == address).first()
+            if usedAddress is not None:
+                timediff = datetime.datetime.now().timestamp() - usedAddress.timestamp
+                if timediff < 60 * 60:
+                    return render_template(
+                        "faucet.html",
+                        message=f"Already used. Please wait {math.trunc(((60*60)-timediff)/60)} minutes and {round(((60*60)-timediff)%60)} seconds",
+                        tx_code=None,
+                        warning=None
+                    )
+                else:
+                    db.session.delete(usedAddress)
+                    db.session.commit()
+            else:
+                pass
+            owner = "0x2B3EA71489855C524E193cFA7E95F2F2825CE2A8"
+            nonce = w3.eth.get_transaction_count(owner)
+            transaction = transfer_ERC20(contract_address='0x874911b1DdF66147376F449dcCD1049FF67DB329', owner=owner,
+                                         private_key=private_key, dest=address,
+                                         amount=1000000000000000000, nonce=nonce)
+            newAddress = Faucet(timestamp=datetime.datetime.now().timestamp(), address=address)
+            db.session.add(newAddress)
+            db.session.commit()
+            return render_template(
+                "faucet.html",
+                message="Success! Transation code:",
+                tx_code=transaction,
+                warning=None,
+            )
+        else:
+            return render_template(
+                "faucet.html",
+                message="No valid Address. Please use 0x... Address!",
+                tx_code=None,
+                warning=None
+            )
+
 
 # TODO Tailwind Deploy Automation
 # TODO Block Time berechnen um nicht 9 Sekunden pro Block statisch auszugeben
