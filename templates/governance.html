@@ -1,0 +1,120 @@
+{% extends "template.html" %}
+{% block content %}
+    <div id="content" class="m-auto max-w-screen-sm flex flex-col justify-center sm:pt-20 pt-8 p-6">
+        <div id="governance" class="mb-20">
+            <p class="font-medium text-blue-500 pb-8">Proposal List</p>
+            <div class="grid grid-cols-2 gap-2 sm:grid-cols-4 text-xs font-extralight pb-8">
+                {% if order_by == "proposal_id" and order == "asc" %}
+                    <a href={{ url_for('governance', page=page, order_by="proposal_id", order='desc') }} class="flex
+                       items-center">
+                    <span class="iconify w-4" data-icon="akar-icons:arrow-up"></span>
+                    <p>Proposal ID</p>
+                    </a>
+                {% elif order_by == "proposal_id" and order == "desc" %}
+                    <a href={{ url_for('governance', page=page, order_by="proposal_id", order='asc') }} class="flex
+                       items-center">
+                    <span class="iconify w-4" data-icon="akar-icons:arrow-down"></span>
+                    <p>Proposal ID</p>
+                    </a>
+                {% else %}
+                    <a href={{ url_for('governance', page=page, order_by="proposal_id", order='asc') }} class="flex
+                       items-center">
+                    <div class="w-4"></div>
+                    <p>Proposal ID</p>
+                    </a>
+                {% endif %}
+                {% if order_by == "title" and order == "asc" %}
+                    <a href={{ url_for('governance', page=page, order_by="title", order='desc') }} class="flex
+                       items-center">
+                    <span class="iconify w-4" data-icon="akar-icons:arrow-up"></span>
+                    <p>Title</p>
+                    </a>
+                {% elif order_by == "title" and order == "desc" %}
+                    <a href={{ url_for('governance', page=page, order_by="title", order='asc') }} class="flex
+                       items-center">
+                    <span class="iconify w-4" data-icon="akar-icons:arrow-down"></span>
+                    <p>Title</p>
+                    </a>
+                {% else %}
+                    <a href={{ url_for('governance', page=page, order_by="title", order='asc') }} class="flex
+                       items-center">
+                    <div class="w-4"></div>
+                    <p>Title</p>
+                    </a>
+                {% endif %}
+                {% if order_by == "status" and order == "asc" %}
+                    <a href={{ url_for('governance', page=page, order_by="status", order='desc') }} class="flex
+                       items-center">
+                    <span class="iconify w-4" data-icon="akar-icons:arrow-up"></span>
+                    <p>Status</p>
+                    </a>
+                {% elif order_by == "status" and order == "desc" %}
+                    <a href={{ url_for('governance', page=page, order_by="status", order='asc') }} class="flex
+                       items-center">
+                    <span class="iconify w-4" data-icon="akar-icons:arrow-down"></span>
+                    <p>Status</p>
+                    </a>
+                {% else %}
+                    <a href={{ url_for('governance', page=page, order_by="status", order='asc') }} class="flex
+                       items-center">
+                    <div class="w-4"></div>
+                    <p>Status</p>
+                    </a>
+                {% endif %}
+            </div>
+            <a class="flex flex-col flex-row gap-12">
+                {% for proposal in proposals %}
+{#                    <div onclick="window.location='{{ url_for('governance') }}'"#}
+                    <div class="cursor-pointer z-0 transform transition sm:hover:scale-105 bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl p-4 -m-4">
+                        <div class="pb-8">
+                            <div class="flex justify-between items-center pb-2">
+                                <div>
+                                    <p class="inline text-lg font-extralight ">{{ proposal.proposal_id }}.</p>
+                                    <p class="inline text-lg ">{{ proposal.title }}</p>
+                                </div>
+                                {% if proposal.status == "PROPOSAL_STATUS_REJECTED" %}
+                                    <p class="inline border border-red-500 text-red-500 rounded-md text-xs p-2">
+                                        Rejected</p>
+                                {% elif proposal.status == "PROPOSAL_STATUS_PASSED" %}
+                                    <p class="inline border border-green-500 text-green-500 rounded-md text-xs p-2">
+                                        Passed</p>
+                                {% endif %}
+                            </div>
+                            <p class="font-extralight text-xs pr-12 sm:pr-0 break-words italic">
+                                {{ proposal.description[:70] }}{% if proposal.description|length > 70 %}
+                                    ...{% endif %}</p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 font-extralight text-sm w-full ">
+                            <td class="">
+                                <div class="flex items-center gap-1">
+                                    <span class="iconify" data-icon="carbon:time"></span>
+                                    <p>Voting End</p>
+                                    <p class="font-bold">{{ proposal.voting_end | timestamp_to_date }}</p>
+                                </div>
+                            </td>
+                            <td class="">
+                                <div class="flex items-center gap-1">
+                                    <span class="iconify" data-icon="fluent:vote-24-regular"></span>
+                                    <p>Most Votes</p>
+                                    <p class="font-bold">{{ proposal | most_votes }}</p>
+                                </div>
+                            </td>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="flex items-center justify-end pt-8">
+                    {% if page > 1 %}
+                        <a href={{ url_for('governance', page=page - 1, order_by=order_by, oder=order) }}>
+                            <span class="iconify" data-icon="akar-icons:chevron-left"></span>
+                        </a>
+                    {% endif %}
+                    <p>{{ page }} of {{ pagenumber }}</p>
+                    {% if page < pagenumber %}
+                        <a href={{ url_for('governance', page=page + 1, order_by=order_by, order=order) }}>
+                            <span class="iconify" data-icon="akar-icons:chevron-right"></span>
+                        </a>
+                    {% endif %}
+                </div>
+        </div>
+    </div>
+{% endblock content %}

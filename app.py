@@ -35,6 +35,28 @@ scheduler.start()
 private_key = os.getenv('private_key')
 
 
+@app.template_filter('timestamp_to_date')
+def timestamp_to_date(s):
+    return datetime.datetime.fromtimestamp(s).strftime('%Y/%m/%d %H:%M:%S')
+
+
+@app.template_filter('most_votes')
+def timestamp_to_date(s):
+    votes = {
+        "Yes":s.result_yes,
+        "No":s.result_no,
+        "Abstain":s.result_abstain,
+        "No with veto": s.result_no_with_veto
+    }
+    highest = max(votes, key=votes.get)
+    total = sum(votes.values())
+    if total == 0:
+        return f'No votes'
+    else:
+        percent = str(round(votes[highest] / total * 100, 1))
+        return f'{highest} {percent}%'
+
+
 def db_lastblock():
     db_block = db.session.query(Block).order_by(Block.number.desc()).first()
     return db_block
@@ -218,6 +240,13 @@ def get_validators():
     return [validator_loader(x) for x in d['validators']]
 
 
+def get_governance():
+    url = 'https://evmos-api.mercury-nodes.net/cosmos/gov/v1beta1/proposals'
+    res = requests.get(url)
+    d = json.loads(res.text)
+    return [governance_loader(x) for x in d['proposals']]
+
+
 @scheduler.task('interval', id='job_dbupdate', seconds=10, misfire_grace_time=30)
 def job_dbupdate():
     db_update()
@@ -263,6 +292,19 @@ def validator_update():
     print("Validators --> db.validator")
 
 
+@scheduler.task('cron', id='job_governanceupdate', minute='*/30', next_run_time=datetime.datetime.now())
+def validator_update():
+    print("Updating Governance")
+    allproposals = get_governance()
+    Governance.query.delete()
+    db.session.commit()
+    for proposal in allproposals:
+        db.make_transient(proposal)
+        db.session.add(proposal)
+    db.session.commit()
+    print("Proposals --> db.Governance")
+
+
 # TODO ausklappen wenn auf Scheduler
 @app.route('/validators')
 def validators():
@@ -279,7 +321,7 @@ def validators():
     order_list = ['desc', 'asc']
     if order not in order_list:
         order = order_list[0]
-    pagenumber = round(len(Validator.query.all()) / 25)
+    pagenumber = math.ceil(len(Validator.query.all()) / 25)
     maxPower = db.session.query(func.sum(Validator.tokens).label("sum_tokens")).first()
     return render_template(
         "validators.html",
@@ -302,6 +344,34 @@ def validator_details(address):
     return render_template(
         "validator_details.html",
         validator=validator,
+        warning=None
+    )
+
+
+@app.route('/governance')
+def governance():
+    page = request.args.get('page')
+    if page is not None and page.isdigit():
+        page = int(page)
+    else:
+        page = 1
+    order_by = request.args.get('order_by')
+    order_by_list = ['proposal_id', 'title', 'status']
+    if order_by not in order_by_list:
+        order_by = order_by_list[0]
+    order = request.args.get('order')
+    order_list = ['desc', 'asc']
+    if order not in order_list:
+        order = order_list[0]
+    pagenumber = math.ceil(len(Governance.query.all()) / 25)
+    return render_template(
+        "governance.html",
+        proposals=Governance.query.order_by(text(order_by + " " + order), 'proposal_id').offset(25 * (page - 1)).limit(
+            25).all(),
+        pagenumber=pagenumber,
+        page=page,
+        order_by=order_by,
+        order=order,
         warning=None
     )
 
@@ -357,11 +427,9 @@ def faucet():
             )
 
 
-# TODO Tailwind Deploy Automation
 # TODO Block Time berechnen um nicht 9 Sekunden pro Block statisch auszugeben
 # TODO Vorbefüllen mit aktuellen Werten damit es beim Laden nicht ploppt
 # TODO Hinweis wenn der RPC nicht reagiert
-# TODO Warning Animation zum Ausfahren von oben geben
 @app.route('/gas')
 def gas():
     time = []

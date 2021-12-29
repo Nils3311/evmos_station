@@ -1,123 +1,78 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Evmosstation Validators - {{ validator.moniker }}</title>
-    <link rel="icon" href="../static/favicon.png" sizes="32x32" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="../static/tailwind.css" rel="stylesheet">
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script src="https://code.iconify.design/2/2.1.0/iconify.min.js"></script>
-</head>
-<body class="bg-gradient-to-br from-black to-blue-900 h-screen text-white bg-fixed bg-black">
-    <div class="">
-        {% if warning is not none %}
-        <div class="py-2 flex flex-col sm:flex-row justify-center items-center bg-red-500 gap-1">
-            <p class="font-bold bg-red-400 px-4 py-1 rounded-full">Warning</p>
-            <p>{{ warning }}</p>
-        </div>
-        {% endif %}
-    <div id="header" x-data="{ mobileMenuOpen : false }"
-         class="flex justify-between sticky top-0 z-50 bg-gradient-to-b from-black lg:from-transparent to-transparent w-full p-6">
-        <a href={{ url_for('index') }} id="logo">
-            <p class="font-bold text-4xl leading-none -mb-1">Evmos</p>
-            <p class="font-extralight text-xl leading-none pl-24">station</p>
-        </a>
-        <div id="menu" class="hidden sm:flex gap-8 font-medium pt-2 h-full">
-            <a class="cursor-pointer transform transition hover:scale-105" href={{ url_for('gas') }}>Monitoring</a>
-            <a class="cursor-pointer transform text-blue-500 transition hover:scale-105" href={{ url_for('validators') }}>Validators</a>
-            <a class="cursor-pointer transform transition hover:scale-105" href={{ url_for('faucet') }}>Faucet</a>
-        </div>
-        <button @click="mobileMenuOpen = !mobileMenuOpen" id="menu_burger"
-                class="sm:hidden flex flex-col gap-8 font-medium h-full mt-2 p-1 focus:outline-none">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition hover:text-blue-500" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
-        </button>
-        <div x-show="mobileMenuOpen"
-             class="flex flex-col sm:hidden menur_burger_extended absolute right-6 top-16 text-right bg-black bg-opacity-25 p-4 -mr-2 rounded-xl"
-             @click.outside="mobileMenuOpen = false">
-            <a class="cursor-pointer transform transition hover:scale-105 pb-2" href={{ url_for('gas') }}>Monitoring</a>
-            <a class="cursor-pointer transform text-blue-500 transition pb-2 hover:scale-105" href={{ url_for('validators') }}>Validators</a>
-            <a class="cursor-pointer transform transition pb-2 hover:scale-105" href={{ url_for('faucet') }}>Faucet</a>
-        </div>
-    </div>
-        <div id="content" class="m-auto max-w-screen-sm flex flex-col justify-center sm:pt-20 pt-8 p-6">
-        <div id="lastvalidator" class="mb-16">
-            <div id="validators" class="mb-20">
-                <button onclick="window.history.back();">
-                    <svg class="text-blue-500 h-full pb-8 text-xl cursor-pointer transform transition hover:scale-105" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none"><path d="M11 5l-7 7l7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
-                </button>
-                <div class="flex flex-col flex-row gap-12">
-                    <div class="bg-gradient-to-bl {% if validator.jailed %} from-red-900 to-red-500 {% else %} from-indigo-900 to-purple-800 {% endif %} rounded-3xl p-4 -m-4">
+{% extends "template.html" %}
+{% block content %}
+<div id="content" class="m-auto max-w-screen-sm flex flex-col justify-center sm:pt-20 pt-8 p-6">
+    <div id="lastvalidator" class="mb-16">
+        <div id="validators" class="mb-20">
+            <button onclick="window.history.back();">
+                <svg class="text-blue-500 h-full pb-8 text-xl cursor-pointer transform transition hover:scale-105" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none"><path d="M11 5l-7 7l7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+            </button>
+            <div class="flex flex-col flex-row gap-12">
+                <div class="bg-gradient-to-bl {% if validator.jailed %} from-red-900 to-red-500 {% else %} from-indigo-900 to-purple-800 {% endif %} rounded-3xl p-4 -m-4">
+                    <div class="pb-4">
+                        <div class="flex justify-between items-center">
+                            <p class="inline text-lg">{{ validator.moniker }}</p>
+                            {% if validator.jailed %} <p class="inline border rounded-md text-xs p-2">Jailed</p> {% endif %}
+                            </div>
+                            <p class="font-extralight text-sm italic pr-12 sm:pr-0 break-words">{{ validator.address }}</p>
+                        </div>
+                    <div class="font-extralight text-sm pb-4">
+                        <div>
+                            <p class="inline">Website: </p>
+                            {% if validator.website == "" %}
+                            -
+                            {% endif %}
+                            <a class="underline" href={{ validator.website }}>{{ validator.website }}</a>
+                        </div>
                         <div class="pb-4">
-                            <div class="flex justify-between items-center">
-                                <p class="inline text-lg">{{ validator.moniker }}</p>
-                                {% if validator.jailed %} <p class="inline border-2 rounded-md text-xs p-2">Jailed</p> {% endif %}
-                                </div>
-                                <p class="font-extralight text-sm italic pr-12 sm:pr-0 break-words">{{ validator.address }}</p>
-                            </div>
-                        <div class="font-extralight text-sm pb-4">
-                            <div>
-                                <p class="inline">Website: </p>
-                                {% if validator.website == "" %}
-                                -
-                                {% endif %}
-                                <a class="underline" href={{ validator.website }}>{{ validator.website }}</a>
-                            </div>
-                            <div class="pb-4">
-                                <p class="inline">Details: </p>
-                                {% if validator.details == "" %}
-                                -
-                                {% endif %}
-                                <p class="inline">{{ validator.details }}</p>
-                            </div>
-                            <div>
-                                <p class="inline">Tokens: </p>
-                                <p class="inline font-bold">{{ validator.tokens }} aEvmos</p>
-                            </div>
-                            <div class="pb-4">
-                                <p class="inline">Bond Status: </p>
-                                <p class="inline">
-                                    {% if validator.status == "BOND_STATUS_BONDED" %}
-                                    Bonded
-                                    {% elif validator.status == "BOND_STATUS_UNBONDED" %}
-                                    Unbonded
-                                    {% else %}
-                                    Unbonding
-                                    {% endif %}
-                                </p>
-                            </div>
+                            <p class="inline">Details: </p>
+                            {% if validator.details == "" %}
+                            -
+                            {% endif %}
+                            <p class="inline">{{ validator.details }}</p>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 font-extralight text-sm w-full ">
-                            <td class="">
-                                <div class="flex items-center gap-1">
-                                    <svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10zM15 12h-1v8h-4v-8H6.081L12 4.601L17.919 12H15z" fill="currentColor"/></svg>
-                                    <p>Voting Power</p>
-                                    <p class="font-bold">{{ (validator.power_share * 100)|round(4) }}%</p>
-                                </div>
-                            </td>
-                            <td class="">
-                                <div class="flex items-center gap-1">
-                                    <span class="iconify" data-icon="ant-design:pie-chart-outlined"></span>
-                                    <p>Validator Share</p>
-                                    <p class="font-bold">{{ (validator.self_share * 100)|round(2) }}%</p>
-                                </div>
-                            </td>
-                            <td class="">
-                                <div class="flex items-center gap-1">
-                                    <span class="iconify" data-icon="akar-icons:share-box"></span>
-                                    <p>Comission Rate</p>
-                                    <p class="font-bold">{{ (validator.comission_rate * 100)|round(2) }}%</p>
-                                </div>
-                            </td>
+                        <div>
+                            <p class="inline">Tokens: </p>
+                            <p class="inline font-bold">{{ validator.tokens }} aEvmos</p>
                         </div>
+                        <div class="pb-4">
+                            <p class="inline">Bond Status: </p>
+                            <p class="inline">
+                                {% if validator.status == "BOND_STATUS_BONDED" %}
+                                Bonded
+                                {% elif validator.status == "BOND_STATUS_UNBONDED" %}
+                                Unbonded
+                                {% else %}
+                                Unbonding
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 font-extralight text-sm w-full ">
+                        <td class="">
+                            <div class="flex items-center gap-1">
+                                <svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10zM15 12h-1v8h-4v-8H6.081L12 4.601L17.919 12H15z" fill="currentColor"/></svg>
+                                <p>Voting Power</p>
+                                <p class="font-bold">{{ (validator.power_share * 100)|round(4) }}%</p>
+                            </div>
+                        </td>
+                        <td class="">
+                            <div class="flex items-center gap-1">
+                                <span class="iconify" data-icon="ant-design:pie-chart-outlined"></span>
+                                <p>Validator Share</p>
+                                <p class="font-bold">{{ (validator.self_share * 100)|round(2) }}%</p>
+                            </div>
+                        </td>
+                        <td class="">
+                            <div class="flex items-center gap-1">
+                                <span class="iconify" data-icon="akar-icons:share-box"></span>
+                                <p>Comission Rate</p>
+                                <p class="font-bold">{{ (validator.comission_rate * 100)|round(2) }}%</p>
+                            </div>
+                        </td>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-</body>
-</html>
+{% endblock content %}

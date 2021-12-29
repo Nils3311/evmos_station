@@ -1,52 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Evmosstation Monitoring</title>
-    <link rel="icon" href="../static/favicon.png" sizes="32x32"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="../static/tailwind.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.2/chart.min.js"
-            integrity="sha512-tMabqarPtykgDtdtSqCL3uLVM0gS1ZkUAVhRFu1vSEFgvB73niFQWJuvviDyBGBH22Lcau4rHB5p2K2T0Xvr6Q=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-</head>
-<body class="{% if warning is not none %}animate-fade_in_20 sm:animate-fade_in_12{% endif %} bg-gradient-to-br from-black to-blue-900 h-screen text-white bg-fixed bg-black">
-<div class="">
-    {% if warning is not none %}
-        <div class="h-20 sm:h-12 py-2 flex flex-col sm:flex-row justify-center items-center bg-red-500 gap-1">
-            <p class="font-bold bg-red-400 px-4 py-1 rounded-full">Warning</p>
-            <p>{{ warning }}</p>
-        </div>
-    {% endif %}
-    <div id="header" x-data="{ mobileMenuOpen : false }"
-         class="flex justify-between sticky top-0 z-50 bg-gradient-to-b from-black lg:from-transparent to-transparent w-full p-6">
-        <a href={{ url_for('index') }} id="logo">
-            <p class="font-bold text-4xl leading-none -mb-1">Evmos</p>
-            <p class="font-extralight text-xl leading-none pl-24">station</p>
-        </a>
-        <div id="menu" class="hidden sm:flex gap-8 font-medium pt-2 h-full">
-            <a class="cursor-pointer transform text-blue-500 transition hover:scale-105" href={{ url_for('gas') }}>Monitoring</a>
-            <a class="cursor-pointer transform transition hover:scale-105" href={{ url_for('validators') }}>Validators</a>
-            <a class="cursor-pointer transform transition hover:scale-105" href={{ url_for('faucet') }}>Faucet</a>
-        </div>
-        <button @click="mobileMenuOpen = !mobileMenuOpen" id="menu_burger"
-                class="sm:hidden flex flex-col gap-8 font-medium h-full mt-2 p-1 focus:outline-none">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition hover:text-blue-500" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
-        </button>
-        <div x-show="mobileMenuOpen"
-             class="flex flex-col sm:hidden menur_burger_extended absolute right-6 top-16 text-right bg-black bg-opacity-25 p-4 -mr-2 rounded-xl"
-             @click.outside="mobileMenuOpen = false">
-            <a class="cursor-pointer transform text-blue-500 transition hover:scale-105 pb-2" href={{ url_for('gas') }}>Monitoring</a>
-            <a class="cursor-pointer transform transition pb-2 hover:scale-105" href={{ url_for('validators') }}>Validators</a>
-            <a class="cursor-pointer transform transition pb-2 hover:scale-105" href={{ url_for('faucet') }}>Faucet</a>
-        </div>
-    </div>
-    <div id="content" class="m-auto max-w-screen-sm flex flex-col justify-center sm:pt-20 pt-8 p-6">
+{% extends "template.html" %}
+{% block content %}
+<div id="content" class="m-auto max-w-screen-sm flex flex-col justify-center sm:pt-20 pt-8 p-6">
         <div id="lastblock" class="mb-16">
             <p class="font-medium text-blue-500 pb-3">Last Block</p>
             <div class="flex flex-col-reverse sm:flex-row justify-between">
@@ -186,8 +140,8 @@
             </div>
         </div>
     </div>
-</div>
-</div>
+{% endblock content %}
+{% block script %}
 <script>
     function callBlock() {
         var block_number = document.getElementById("block_number");
@@ -301,7 +255,5 @@
             }
         }
     });
-
 </script>
-</body>
-</html>
+{% endblock script %}
