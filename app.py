@@ -57,6 +57,26 @@ def timestamp_to_date(s):
         return f'{highest} {percent}%'
 
 
+@app.template_filter('sum_votes')
+def timestamp_to_date(s):
+    votes = {
+        "Yes":s.result_yes,
+        "No":s.result_no,
+        "Abstain":s.result_abstain,
+        "No with veto": s.result_no_with_veto
+    }
+    total = sum(votes.values())
+    if total == 0:
+        return 1
+    else:
+        return total
+
+
+@app.template_filter('replace')
+def replace_linebreaks(s):
+    return s.replace(r"\n", "<br>")
+
+
 def db_lastblock():
     db_block = db.session.query(Block).order_by(Block.number.desc()).first()
     return db_block
@@ -372,6 +392,18 @@ def governance():
         page=page,
         order_by=order_by,
         order=order,
+        warning=None
+    )
+
+
+@app.route('/governance/<proposal_id>')
+def governance_details(proposal_id):
+    proposal = Governance.query.filter(Governance.proposal_id == proposal_id).first()
+    if proposal is None:
+        proposal = Governance.query.frirst()
+    return render_template(
+        "governance_details.html",
+        proposal=proposal,
         warning=None
     )
 

@@ -64,41 +64,42 @@
             </div>
             <a class="flex flex-col flex-row gap-12">
                 {% for proposal in proposals %}
-{#                    <div onclick="window.location='{{ url_for('governance') }}'"#}
-                    <div class="cursor-pointer z-0 transform transition sm:hover:scale-105 bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl p-4 -m-4">
-                        <div class="pb-8">
-                            <div class="flex justify-between items-center pb-2">
-                                <div>
-                                    <p class="inline text-lg font-extralight ">{{ proposal.proposal_id }}.</p>
-                                    <p class="inline text-lg ">{{ proposal.title }}</p>
+                    <div onclick="window.location='{{ url_for('governance_details', proposal_id=proposal.proposal_id) }}'">
+                        <div class="cursor-pointer z-0 transform transition sm:hover:scale-105 bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl p-4 -m-4">
+                            <div class="pb-8">
+                                <div class="flex justify-between items-center pb-2">
+                                    <div>
+                                        <p class="inline text-lg font-extralight ">{{ proposal.proposal_id }}.</p>
+                                        <p class="inline text-lg ">{{ proposal.title }}</p>
+                                    </div>
+                                    {% if proposal.status == "PROPOSAL_STATUS_REJECTED" %}
+                                        <p class="inline border border-red-500 text-red-500 rounded-md text-xs p-2">
+                                            Rejected</p>
+                                    {% elif proposal.status == "PROPOSAL_STATUS_PASSED" %}
+                                        <p class="inline border border-green-500 text-green-500 rounded-md text-xs p-2">
+                                            Passed</p>
+                                    {% endif %}
                                 </div>
-                                {% if proposal.status == "PROPOSAL_STATUS_REJECTED" %}
-                                    <p class="inline border border-red-500 text-red-500 rounded-md text-xs p-2">
-                                        Rejected</p>
-                                {% elif proposal.status == "PROPOSAL_STATUS_PASSED" %}
-                                    <p class="inline border border-green-500 text-green-500 rounded-md text-xs p-2">
-                                        Passed</p>
-                                {% endif %}
+                                <p class="font-extralight text-xs pr-12 sm:pr-0 break-words italic">
+                                    {{ proposal.description[:70] }}{% if proposal.description|length > 70 %}
+                                        ...{% endif %}</p>
                             </div>
-                            <p class="font-extralight text-xs pr-12 sm:pr-0 break-words italic">
-                                {{ proposal.description[:70] }}{% if proposal.description|length > 70 %}
-                                    ...{% endif %}</p>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 font-extralight text-sm w-full ">
-                            <td class="">
-                                <div class="flex items-center gap-1">
-                                    <span class="iconify" data-icon="carbon:time"></span>
-                                    <p>Voting End</p>
-                                    <p class="font-bold">{{ proposal.voting_end | timestamp_to_date }}</p>
-                                </div>
-                            </td>
-                            <td class="">
-                                <div class="flex items-center gap-1">
-                                    <span class="iconify" data-icon="fluent:vote-24-regular"></span>
-                                    <p>Most Votes</p>
-                                    <p class="font-bold">{{ proposal | most_votes }}</p>
-                                </div>
-                            </td>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 font-extralight text-sm w-full ">
+                                <td class="">
+                                    <div class="flex items-center gap-1">
+                                        <span class="iconify" data-icon="carbon:time"></span>
+                                        <p>Voting End</p>
+                                        <p class="font-bold">{{ proposal.voting_end | timestamp_to_date }}</p>
+                                    </div>
+                                </td>
+                                <td class="">
+                                    <div class="flex items-center gap-1">
+                                        <span class="iconify" data-icon="fluent:vote-24-regular"></span>
+                                        <p>Most Votes</p>
+                                        <p class="font-bold">{{ proposal | most_votes }}</p>
+                                    </div>
+                                </td>
+                            </div>
                         </div>
                     </div>
                 {% endfor %}

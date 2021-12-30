@@ -1,0 +1,81 @@
+{% extends "template.html" %}
+{% block content %}
+    <div id="content" class="m-auto max-w-screen-sm flex flex-col justify-center sm:pt-20 pt-8 p-6">
+        <div id="validators" class="mb-20">
+            <button onclick="window.history.back();">
+                <svg class="text-blue-500 h-full pb-8 text-xl cursor-pointer transform transition hover:scale-105"
+                     xmlns="http://www.w3.org/2000/svg"
+                     aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet"
+                     viewBox="0 0 24 24">
+                    <g fill="none">
+                        <path d="M11 5l-7 7l7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                              stroke-linejoin="round"/>
+                        <path d="M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                              stroke-linejoin="round"/>
+                    </g>
+                </svg>
+            </button>
+            <div class="flex flex-col flex-row gap-12">
+                <div class="bg-gradient-to-bl from-indigo-900 to-purple-800 rounded-3xl p-4 -m-4">
+                    <div class="pb-4">
+                        <div class="flex justify-between items-center pb-2">
+                            <div>
+                                <p class="inline text-lg font-extralight ">{{ proposal.proposal_id }}.</p>
+                                <p class="inline text-lg">{{ proposal.title }}</p>
+                            </div>
+                            {% if proposal.status == "PROPOSAL_STATUS_REJECTED" %}
+                                <p class="inline border border-red-500 text-red-500 rounded-md text-xs p-2">
+                                    Rejected</p>
+                            {% elif proposal.status == "PROPOSAL_STATUS_PASSED" %}
+                                <p class="inline border border-green-500 text-green-500 rounded-md text-xs p-2">
+                                    Passed</p>
+                            {% endif %}
+                        </div>
+                        <p class="font-extralight text-sm pr-12 sm:pr-0 break-words italic">
+                            {{ proposal.description | replace | safe}}</p>
+                    </div>
+                    <div class="font-extralight text-sm pb-4">
+                        <div class="pb-4">
+                            <p class="inline">Type: </p>
+                            <p class="inline">{{ proposal.proposal_type }}</p>
+                        </div>
+                        <table>
+                            <tr>
+                                <td>Yes:</td>
+                                <td class="pl-2">{{ (proposal.result_yes / proposal|sum_votes * 100)|round(1) }}%</td>
+                            </tr>
+                            <tr>
+                                <td>No:</td>
+                                <td class="pl-2">{{ (proposal.result_no / proposal|sum_votes * 100)|round(1) }}%</td>
+                            </tr>
+                            <tr>
+                                <td>Abstain</td>
+                                <td class="pl-2">{{ (proposal.result_abstain / proposal|sum_votes * 100)|round(1) }}%</td>
+                            </tr>
+                            <tr>
+                                <td>No with veto</td>
+                                <td class="pl-2">{{ (proposal.result_no_with_veto / proposal|sum_votes * 100)|round(1) }}%</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 font-extralight text-sm w-full ">
+                        <td class="">
+                            <div class="flex items-center gap-1">
+                                <span class="iconify" data-icon="carbon:time"></span>
+                                <p>Voting End</p>
+                                <p class="font-bold">{{ proposal.voting_end | timestamp_to_date }}</p>
+                            </div>
+                        </td>
+                        <td class="">
+                            <div class="flex items-center gap-1">
+                                <span class="iconify" data-icon="fluent:vote-24-regular"></span>
+                                <p>Most Votes</p>
+                                <p class="font-bold">{{ proposal | most_votes }}</p>
+                            </div>
+                        </td>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
