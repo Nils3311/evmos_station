@@ -45,7 +45,7 @@
                href={{ url_for('validators') }}>Validators</a>
             <a class="cursor-pointer transform transition hover:scale-105"
                href={{ url_for('governance') }}>Governance</a>
-            <a class="cursor-pointer transform transition hover:scale-105" href={{ url_for('faucet') }}>Faucet</a>
+{#            <a class="cursor-pointer transform transition hover:scale-105" href={{ url_for('faucet') }}>Faucet</a>#}
         </div>
         <button @click="mobileMenuOpen = !mobileMenuOpen" id="menu_burger"
                 class="sm:hidden flex flex-col gap-8 font-medium h-full mt-2 p-1 focus:outline-none">
@@ -60,7 +60,7 @@
             <a class="cursor-pointer transform transition pb-2 hover:scale-105" href={{ url_for('gas') }}>Monitoring</a>
             <a class="cursor-pointer transform transition pb-2 hover:scale-105" href={{ url_for('validators') }}>Validators</a>
             <a class="cursor-pointer transform transition pb-2 hover:scale-105" href={{ url_for('governance') }}>Governance</a>
-            <a class="cursor-pointer transform transition hover:scale-105" href={{ url_for('faucet') }}>Faucet</a>
+{#            <a class="cursor-pointer transform transition hover:scale-105" href={{ url_for('faucet') }}>Faucet</a>#}
         </div>
     </div>
     {% block content %}{% endblock content %}

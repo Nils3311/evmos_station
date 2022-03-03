@@ -408,7 +408,7 @@ def governance_details(proposal_id):
     )
 
 
-@app.route('/faucet', methods=['GET', 'POST'])
+# @app.route('/faucet', methods=['GET', 'POST'])
 def faucet():
     if request.method == 'GET':
         return render_template(

@@ -3,6 +3,9 @@
     <div id="content" class="m-auto max-w-screen-sm flex flex-col justify-center sm:pt-20 pt-8 p-6">
         <div id="governance" class="mb-20">
             <p class="font-medium text-blue-500 pb-8">Proposal List</p>
+            {% if not proposals %}
+            <p>No governance proposals existing. Come back later =)</p>
+            {% else %}
             <div class="grid grid-cols-2 gap-2 sm:grid-cols-4 text-xs font-extralight pb-8">
                 {% if order_by == "proposal_id" and order == "asc" %}
                     <a href={{ url_for('governance', page=page, order_by="proposal_id", order='desc') }} class="flex
@@ -104,18 +107,21 @@
                     </div>
                 {% endfor %}
                 <div class="flex items-center justify-end pt-8">
-                    {% if page > 1 %}
-                        <a href={{ url_for('governance', page=page - 1, order_by=order_by, oder=order) }}>
-                            <span class="iconify" data-icon="akar-icons:chevron-left"></span>
-                        </a>
-                    {% endif %}
-                    <p>{{ page }} of {{ pagenumber }}</p>
-                    {% if page < pagenumber %}
-                        <a href={{ url_for('governance', page=page + 1, order_by=order_by, order=order) }}>
-                            <span class="iconify" data-icon="akar-icons:chevron-right"></span>
-                        </a>
+                    {% if pagenumber > 0 %}
+                        {% if page > 1 %}
+                            <a href={{ url_for('governance', page=page - 1, order_by=order_by, oder=order) }}>
+                                <span class="iconify" data-icon="akar-icons:chevron-left"></span>
+                            </a>
+                        {% endif %}
+                        <p>{{ page }} of {{ pagenumber }}</p>
+                        {% if page < pagenumber %}
+                            <a href={{ url_for('governance', page=page + 1, order_by=order_by, order=order) }}>
+                                <span class="iconify" data-icon="akar-icons:chevron-right"></span>
+                            </a>
+                        {% endif %}
                     {% endif %}
                 </div>
         </div>
+            {% endif %}
     </div>
 {% endblock content %}

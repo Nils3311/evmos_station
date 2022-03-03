@@ -4,17 +4,26 @@ import requests
 from web3 import Web3
 
 # TODO checken ob das auch benötigt wird??
-# WEB3_ENDPOINT="https://evmos-testnet.gateway.pokt.network/v1/lb/61afa495a6f4fb0039968571"
-WEB3_ENDPOINT = 'https://evmos-evm-rpc.tk/'
-w3 = Web3(Web3.HTTPProvider(WEB3_ENDPOINT))
+
 
 # rpc = 'https://evmos-testnet.gateway.pokt.network/v1/lb/61ac07b995d548003aedf5ee'
 # rpc = 'https://ethereum.rpc.evmos.dev/'
 # rpc = 'https://evmos-rpc.mercury-nodes.net:443/'
 # rpc = 'https://evmos-evm-rpc.tk:443/'
 # rpc = 'https://evmos-rpc.mercury-nodes.net/'
-rpc = 'https://evmos-eth.mercury-nodes.net/'
+# rpc = 'https://evmos-eth.mercury-nodes.net/'
 
+evmos1 = 'https://grpc.bd.evmos.org:9090'
+evmos2 = 'https://rest.bd.evmos.org:1317'
+evmos3 = 'https://tendermint.bd.evmos.org:26657'
+evmos4 = 'https://eth.bd.evmos.org:8545'
+
+rpc = evmos4
+
+# WEB3_ENDPOINT="https://evmos-testnet.gateway.pokt.network/v1/lb/61afa495a6f4fb0039968571"
+# WEB3_ENDPOINT = 'https://evmos-evm-rpc.tk/'
+WEB3_ENDPOINT = evmos1
+w3 = Web3(Web3.HTTPProvider(WEB3_ENDPOINT))
 
 # TODO How to handle if RPC is not answering
 def hex_to_int(BIGINT):
