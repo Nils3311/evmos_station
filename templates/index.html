@@ -94,7 +94,7 @@
             <p class="font-medium text-blue-500 pb-3">History</p>
             <table class="font-extralight text-sm mb-12">
                 <tr>
-                    <td>Transactions, past 24h</td>
+                    <td>EVM Transactions, past 24h</td>
                     <td id="hist_tx" class="font-bold pl-2"></td>
                 </tr>
                 <tr>
@@ -102,7 +102,7 @@
                     <td id="hist_fee" class="font-bold pl-2"></td>
                 </tr>
                 <tr>
-                    <td>Avg tx/s, past 24h</td>
+                    <td>Avg EVM tx/s, past 24h</td>
                     <td id="hist_txs" class="font-bold pl-2"></td>
                 </tr>
             </table>
@@ -174,7 +174,7 @@
                     block_size.innerText = data.size / 1000 + ' kB'
                     block_usage.innerText = ((data.gasUsed / data.gasLimit) * 100).toFixed(2) + ' %'
                     block_transaction.innerText = data.transactionCount
-                    block_timestamp.innerText = data.timestamp_str
+                    block_timestamp.innerText = data.timestamp_str + ' UTC'
                     gas_fast.innerText = data.gas_avgFee[1]
                     gas_fast_tx.innerText = data.gas_avgFee[1] * 21000
                     gas_medium.innerText = data.gas_avgFee[6]
