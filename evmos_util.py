@@ -20,6 +20,7 @@ evmos4 = 'https://eth.bd.evmos.org:8545'
 
 rpc = evmos4
 
+
 # WEB3_ENDPOINT="https://evmos-testnet.gateway.pokt.network/v1/lb/61afa495a6f4fb0039968571"
 # WEB3_ENDPOINT = 'https://evmos-evm-rpc.tk/'
 WEB3_ENDPOINT = evmos1
@@ -55,6 +56,11 @@ def eth_getblock_data(blockheight='latest'):
         "id": 1,
     }
     return requests.post(rpc, json=payload).json()['result']
+
+
+def cosm_gettransaction_count():
+    data = requests.get(evmos2 + '/cosmos/base/tendermint/v1beta1/blocks/latest').json()
+    return len(data['block']['data']['txs'])
 
 
 # Schnittstelle zum Vertrag
